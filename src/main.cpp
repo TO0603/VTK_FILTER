@@ -105,23 +105,29 @@ void WriteKVSML()
  * VTK_QUADRATIC_TETRA      = 24
  * VTK_QUADRATIC_HEXAHEDRON = 25
 */
+
+//enum VTKCellType
+//{
+//    Hexahedra = 12,
+//    Pyramid = 14
+//}
 kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellType)
 {
-    if(vtk_cellType = 0)
+    if(vtk_cellType == 0)
         return kvs::UnstructuredVolumeObject::UnknownCellType;
-    if(vtk_cellType = 10)
+    if(vtk_cellType == 10)
         return kvs::UnstructuredVolumeObject::Tetrahedra;
-    if(vtk_cellType = 12)
+    if(vtk_cellType == 12)
         return kvs::UnstructuredVolumeObject::Hexahedra;
-    if(vtk_cellType = 24)
+    if(vtk_cellType == 24)
         return kvs::UnstructuredVolumeObject::QuadraticTetrahedra;
-    if(vtk_cellType = 25)
+    if(vtk_cellType == 25)
         return kvs::UnstructuredVolumeObject::QuadraticHexahedra;
-    if(vtk_cellType = 14)
+    if(vtk_cellType == 14)
         return kvs::UnstructuredVolumeObject::Pyramid;
-    if(vtk_cellType = 1)
+    if(vtk_cellType == 1)
         return kvs::UnstructuredVolumeObject::Point;//?
-    if(vtk_cellType = 13) //?
+    if(vtk_cellType == 13) //?
         return kvs::UnstructuredVolumeObject::Prism;
 }
 
@@ -155,7 +161,7 @@ kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int cellType,
                                                               kvs::ValueArray<kvs::UInt32> connections)
 {
     kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();
-    object->setCellType( GetKVSUnstructuredCellType(cellType));
+    object->setCellType( GetKVSUnstructuredCellType(cellType)); //convertVTKCellTypetoKVSCellTYpe(celltype)
     object->setVeclen( veclen );
     object->setNumberOfNodes( nnodes );
     object->setNumberOfCells( ncells );
@@ -167,7 +173,10 @@ kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int cellType,
     object->updateNormalizeParameters();
 #ifdef DEBUG
     std::cout << __FILE__ << ":" << __func__ << ":" << __LINE__    << std::endl;
+    std::cout << cellType << std::endl;
     std::cout << *object << std::endl;
+    //    std::cout << object->coords() << std::endl;
+    std::cout << connections << std::endl;
 #endif
     return object;
 }
@@ -221,21 +230,36 @@ int main(int argc, char* argv[])
         long long m_nelements      = output->GetNumberOfCells();
         int m_nkinds               = n_pointData_components + n_cellData_components;
 
+#ifdef DEBUG
+        std::cout << "m_nnodes = " << m_nnodes << std::endl;
+        std::cout << "m_nelements = " << m_nelements << std::endl;
+        std::cout << "n_file_fields = " << n_file_fields << std::endl;
+        std::cout << "n_file_scalars = " << n_file_scalars << std::endl;
+        std::cout << "n_pointData_arrays = "<< n_pointData_arrays << std::endl;
+        std::cout << "n_pointData_components = "<< n_pointData_components << std::endl;
+        std::cout << "n_pointData_tuples = "<< n_pointData_tuples << std::endl;
+        std::cout << "n_cellData_arrays = "<< n_cellData_arrays << std::endl;
+        std::cout << "n_cellData_components = "<< n_cellData_components << std::endl;
+        std::cout << "n_cellData_tuples = "<< n_cellData_tuples << std::endl;
+        std::cout << "veclen = " << m_nkinds << std::endl;
+#endif
+
         //取得した値をKVSのボリュームデータ作成に必要なものに代入
         const size_t nnodes        = m_nnodes;
         const size_t ncells        = m_nelements;
         const size_t veclen        = m_nkinds;
         kvs::ValueArray<kvs::Real32> CoordArray(nnodes * 3);
         kvs::ValueArray<kvs::Real32> ValueArray(nnodes * veclen);
-        kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * 4);
+        //        kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * 8);
+        kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * output->GetCell(0)->GetNumberOfPoints());
         //PFIファイルの作成に必要な変数
         float volume_minmax_coord[6];
 
 #ifdef DEBUG
-        std::cout << "nnodes         = " << nnodes << std::endl;
-        std::cout << "ncells         = " << ncells << std::endl;
-        std::cout << "veclen         = " << veclen << std::endl;
-        std::cout << "CoordArray     : " << std::endl;
+        //        std::cout << "nnodes         = " << nnodes << std::endl;
+        //        std::cout << "ncells         = " << ncells << std::endl;
+        //        std::cout << "veclen         = " << veclen << std::endl;
+        //        std::cout << "CoordArray     : " << std::endl;
 #endif
 
         //座標の代入
@@ -245,12 +269,12 @@ int main(int argc, char* argv[])
             CoordArray[i * 3 + 1] = point[1];
             CoordArray[i * 3 + 2] = point[2];
 #ifdef DEBUG
-            std::cout << CoordArray[i * 3] << "," << CoordArray[i * 3 + 1] << "," << CoordArray[i * 3 + 2] << std::endl;
+            //            std::cout << CoordArray[i * 3] << "," << CoordArray[i * 3 + 1] << "," << CoordArray[i * 3 + 2] << std::endl;
 #endif
         }
 
 #ifdef DEBUG
-        std::cout << "ValueArray     : " << std::endl;
+        //        std::cout << "ValueArray     : " << std::endl;
 #endif
 
         //ポイント物理値の代入
@@ -262,7 +286,7 @@ int main(int argc, char* argv[])
                 pointComponents = pointData_array->GetTuple(j);
                 ValueArray[j] = pointComponents[0];
 #ifdef DEBUG
-                std::cout << ValueArray[j] << std::endl;
+                //                std::cout << ValueArray[j] << std::endl;
 #endif
             }
         }
@@ -271,11 +295,12 @@ int main(int argc, char* argv[])
         int new_id;
         int cellType;
         vtkNew<vtkIdList> included_points;
+        int connection_index = 0;
         for(int i = 0; i < m_nelements; i++){
             vtkCell* element = output->GetCell(i);
             cellType = element->GetCellType();
 #ifdef DEBUG
-            std::cout << "CellType        = " << cellType << std::endl;
+            //            std::cout << "CellType        = " << cellType << std::endl;
 #endif
             int n_points = element->GetNumberOfPoints();
 #ifdef DEBUG
@@ -285,99 +310,106 @@ int main(int argc, char* argv[])
             for(int j = 0; j < n_points; j++){
                 int id1= element->GetPointId(j);
                 new_id = 1 + included_points->InsertNextId(id1);
-                ConnectionArray[j] = id1;
+                ConnectionArray[ connection_index ] = id1;
+                std::cout << "ConnectionArray[" << connection_index << "]"<< ConnectionArray[j] << std::endl;
+                connection_index++;
 #ifdef DEBUG
-                std::cout << ConnectionArray[j] << std::endl;
+                //std::cout << "ConnectionArray[" << j + i*n_points << "]"<< ConnectionArray[j] << std::endl;
+                //std::cout << "ConnectionArray[" << connection_index << "]"<< ConnectionArray[j] << std::endl;
 #endif
             }
-
-            kvs::UnstructuredVolumeObject* volume = CreateUnstructuredVolumeObject(cellType,
-                                                                                   nnodes,
-                                                                                   ncells,
-                                                                                   veclen,
-                                                                                   CoordArray,
-                                                                                   ValueArray,
-                                                                                   ConnectionArray);
-
-            volume_minmax_coord[0] = volume->minObjectCoord().x();
-            volume_minmax_coord[1] = volume->minObjectCoord().y();
-            volume_minmax_coord[2] = volume->minObjectCoord().z();
-            volume_minmax_coord[3] = volume->maxObjectCoord().x();
-            volume_minmax_coord[4] = volume->maxObjectCoord().y();
-            volume_minmax_coord[5] = volume->maxObjectCoord().z();
-
-#ifdef DEBUG
-            for(int i = 0; i < 6; i++){
-                std::cout << volume_minmax_coord[i] << std::endl;
-            }
-#endif
-
-            kvs::KVSMLUnstructuredVolumeObject* kvsml =
-                    new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
-            kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
-            kvsml->write("./out/" + fileName + "_00000_0000001_0000001.kvsml");
-            delete kvsml;
-
-
-
-            FILE *pfi = NULL;
-            int itmp;
-            float ftmp[6];
-            std::string pfiFileName = "./out/" + fileName + ".pfi";
-            //            pfi = fopen("./out/tetrahedra.pfi", "wb");
-            pfi = fopen(pfiFileName.c_str(), "wb");
-            //頂点数
-            itmp = nnodes;
-            fwrite(&itmp, 4, 1, pfi);
-            //要素数
-            itmp = ncells;
-            fwrite(&itmp, 4, 1, pfi);
-            //要素タイプ
-            itmp = GetPFIUnstructuredCellType(volume->cellType());
-            fwrite(&itmp, 4, 1, pfi);
-            //ファイルタイプ
-            itmp = 0;
-            fwrite(&itmp, 4, 1, pfi);
-            //ファイル数
-            itmp = 0;
-            fwrite(&itmp, 4, 1, pfi);
-            //成分数(ベクトル?)
-            itmp = veclen;
-            fwrite(&itmp, 4, 1, pfi);
-            //開始ステップ
-            itmp = 0;
-            fwrite(&itmp, 4, 1, pfi);
-            //終了ステップ
-            itmp = 0;
-            fwrite(&itmp, 4, 1, pfi);
-            //サブボリューム数
-            itmp = 1;
-            fwrite(&itmp, 4, 1, pfi);
-            //座標の最大最小値
-            ftmp[0] = volume_minmax_coord[0];
-            ftmp[1] = volume_minmax_coord[1];
-            ftmp[2] = volume_minmax_coord[2];
-            ftmp[3] = volume_minmax_coord[3];
-            ftmp[4] = volume_minmax_coord[4];
-            ftmp[5] = volume_minmax_coord[5];
-            fwrite(&ftmp, 4, 6, pfi);
-            //サブボリュームの頂点数
-            itmp = nnodes;
-            fwrite(&itmp, 4, 1, pfi);
-            //サブボリュームの要素数
-            itmp = ncells;
-            fwrite(&itmp, 4, 1, pfi);
-            //サブボリュームの座標の最大最小値
-            fwrite(&ftmp, 4, 6, pfi);
-            //ステップ1の成分最小値
-            itmp = 1;
-            fwrite(&itmp, 4, 1, pfi);
-            //ステップ1の成分最大値
-            itmp = 5;
-            fwrite(&itmp, 4, 1, pfi);
-            fclose(pfi);
-            delete volume;
         }
+
+
+
+
+        kvs::UnstructuredVolumeObject* volume = CreateUnstructuredVolumeObject(cellType,
+                                                                               nnodes,
+                                                                               ncells,
+                                                                               veclen,
+                                                                               CoordArray,
+                                                                               ValueArray,
+                                                                               ConnectionArray);
+
+        volume_minmax_coord[0] = volume->minObjectCoord().x();
+        volume_minmax_coord[1] = volume->minObjectCoord().y();
+        volume_minmax_coord[2] = volume->minObjectCoord().z();
+        volume_minmax_coord[3] = volume->maxObjectCoord().x();
+        volume_minmax_coord[4] = volume->maxObjectCoord().y();
+        volume_minmax_coord[5] = volume->maxObjectCoord().z();
+
+#ifdef DEBUG
+        for(int i = 0; i < 6; i++){
+            std::cout << volume_minmax_coord[i] << std::endl;
+        }
+#endif
+
+        kvs::KVSMLUnstructuredVolumeObject* kvsml =
+                new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
+        kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
+        kvsml->write("./out/" + fileName + "_00000_0000001_0000001.kvsml");
+        delete kvsml;
+
+
+
+        FILE *pfi = NULL;
+        int itmp;
+        float ftmp[6];
+        std::string pfiFileName = "./out/" + fileName + ".pfi";
+        //            pfi = fopen("./out/tetrahedra.pfi", "wb");
+        pfi = fopen(pfiFileName.c_str(), "wb");
+        //頂点数
+        itmp = nnodes;
+        fwrite(&itmp, 4, 1, pfi);
+        //要素数
+        itmp = ncells;
+        fwrite(&itmp, 4, 1, pfi);
+        //要素タイプ
+        itmp = GetPFIUnstructuredCellType(volume->cellType());
+        fwrite(&itmp, 4, 1, pfi);
+        //ファイルタイプ
+        itmp = 0;
+        fwrite(&itmp, 4, 1, pfi);
+        //ファイル数
+        itmp = 0;
+        fwrite(&itmp, 4, 1, pfi);
+        //成分数(ベクトル?)
+        itmp = veclen;
+        fwrite(&itmp, 4, 1, pfi);
+        //開始ステップ
+        itmp = 0;
+        fwrite(&itmp, 4, 1, pfi);
+        //終了ステップ
+        itmp = 0;
+        fwrite(&itmp, 4, 1, pfi);
+        //サブボリューム数
+        itmp = 1;
+        fwrite(&itmp, 4, 1, pfi);
+        //座標の最大最小値
+        ftmp[0] = volume_minmax_coord[0];
+        ftmp[1] = volume_minmax_coord[1];
+        ftmp[2] = volume_minmax_coord[2];
+        ftmp[3] = volume_minmax_coord[3];
+        ftmp[4] = volume_minmax_coord[4];
+        ftmp[5] = volume_minmax_coord[5];
+        fwrite(&ftmp, 4, 6, pfi);
+        //サブボリュームの頂点数
+        itmp = nnodes;
+        fwrite(&itmp, 4, 1, pfi);
+        //サブボリュームの要素数
+        itmp = ncells;
+        fwrite(&itmp, 4, 1, pfi);
+        //サブボリュームの座標の最大最小値
+        fwrite(&ftmp, 4, 6, pfi);
+        //ステップ1の成分最小値
+        itmp = 1;
+        fwrite(&itmp, 4, 1, pfi);
+        //ステップ1の成分最大値
+        itmp = 5;
+        fwrite(&itmp, 4, 1, pfi);
+        fclose(pfi);
+        delete volume;
+
 
 
     }
