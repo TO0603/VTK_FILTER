@@ -108,12 +108,27 @@ void WriteKVSML()
 
 //enum VTKCellType
 //{
-//    Hexahedra = 12,
-//    Pyramid = 14
+//    VTK_EMPTY_CELL           = 0,
+//    VTK_VERTEX               = 1,
+//    VTK_POLY_VERTEX          = 2,
+//    VTK_LINE                 = 3,
+//    VTK_POINT_LINE           = 4,
+//    VTK_TRIANGLE             = 5,
+//    VTK_TRIANGLE_STRIPE      = 6,
+//    VTK_POLYGON              = 7,
+//    VTK_PIXEL                = 8,
+//    VTK_QUAD                 = 9,
+//    VTK_TETRA                = 10,
+//    VTK_VOXEL                = 11,
+//    VTK_HEXAHEDRON           = 12,
+//    VTK_WEDGE                = 13,
+//    VTK_PYRAMID              = 14,
+//    VTK_QUADRATIC_TETRA      = 24,
+//    VTK_QUADRATIC_HEXAHEDRON = 25
 //}
 kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellType)
 {
-    if(vtk_cellType == 0)
+    if(vtk_cellType == 0)//スイッチ文で書いてね
         return kvs::UnstructuredVolumeObject::UnknownCellType;
     if(vtk_cellType == 10)
         return kvs::UnstructuredVolumeObject::Tetrahedra;
@@ -132,7 +147,8 @@ kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellT
 }
 
 //pfiファイルで使用する非構造格子型要素タイプを取得する関数
-int GetPFIUnstructuredCellType(kvs::UnstructuredVolumeObject::CellType kvs_cellType){
+int GetPFIUnstructuredCellType(kvs::UnstructuredVolumeObject::CellType kvs_cellType)
+{
     if(kvs_cellType == kvs::UnstructuredVolumeObject::UnknownCellType)
         return 0;//EXIT
     if(kvs_cellType == kvs::UnstructuredVolumeObject::Tetrahedra)
@@ -263,7 +279,8 @@ int main(int argc, char* argv[])
 #endif
 
         //座標の代入
-        for(int i = 0; i < m_nnodes; i++){
+        for(int i = 0; i < m_nnodes; i++)
+        {
             double* point = output->GetPoint(i);
             CoordArray[i * 3] = point[0];
             CoordArray[i * 3 + 1] = point[1];
@@ -280,9 +297,11 @@ int main(int argc, char* argv[])
         //ポイント物理値の代入
         vtkDataArray* pointData_array = NULL;
         double* pointComponents = NULL;
-        for(int i = 0; i < n_pointData_arrays; i++ ){
+        for(int i = 0; i < n_pointData_arrays; i++ )
+        {
             pointData_array = point_data->GetArray(i);
-            for(int j = 0; j < n_pointData_tuples; j++){
+            for(int j = 0; j < n_pointData_tuples; j++)
+            {
                 pointComponents = pointData_array->GetTuple(j);
                 ValueArray[j] = pointComponents[0];
 #ifdef DEBUG
@@ -296,7 +315,8 @@ int main(int argc, char* argv[])
         int cellType;
         vtkNew<vtkIdList> included_points;
         int connection_index = 0;
-        for(int i = 0; i < m_nelements; i++){
+        for(int i = 0; i < m_nelements; i++)
+        {
             vtkCell* element = output->GetCell(i);
             cellType = element->GetCellType();
 #ifdef DEBUG
@@ -307,7 +327,8 @@ int main(int argc, char* argv[])
             std::cout << "n_points        = " << n_points << std::endl;
             std::cout << "ConnectionArray : " << std::endl;
 #endif
-            for(int j = 0; j < n_points; j++){
+            for(int j = 0; j < n_points; j++)
+            {
                 int id1= element->GetPointId(j);
                 new_id = 1 + included_points->InsertNextId(id1);
                 ConnectionArray[ connection_index ] = id1;
@@ -339,7 +360,8 @@ int main(int argc, char* argv[])
         volume_minmax_coord[5] = volume->maxObjectCoord().z();
 
 #ifdef DEBUG
-        for(int i = 0; i < 6; i++){
+        for(int i = 0; i < 6; i++)
+        {
             std::cout << volume_minmax_coord[i] << std::endl;
         }
 #endif
