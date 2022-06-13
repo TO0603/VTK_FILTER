@@ -228,6 +228,8 @@ int main(int argc, char* argv[])
         kvs::ValueArray<kvs::Real32> CoordArray(nnodes * 3);
         kvs::ValueArray<kvs::Real32> ValueArray(nnodes * veclen);
         kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * 4);
+        //PFIファイルの作成に必要な変数
+        float volume_minmax_coord[6];
 
 #ifdef DEBUG
         std::cout << "nnodes         = " << nnodes << std::endl;
@@ -297,6 +299,19 @@ int main(int argc, char* argv[])
                                                                                    ValueArray,
                                                                                    ConnectionArray);
 
+            volume_minmax_coord[0] = volume->minObjectCoord().x();
+            volume_minmax_coord[1] = volume->minObjectCoord().y();
+            volume_minmax_coord[2] = volume->minObjectCoord().z();
+            volume_minmax_coord[3] = volume->maxObjectCoord().x();
+            volume_minmax_coord[4] = volume->maxObjectCoord().y();
+            volume_minmax_coord[5] = volume->maxObjectCoord().z();
+
+#ifdef DEBUG
+            for(int i = 0; i < 6; i++){
+                std::cout << volume_minmax_coord[i] << std::endl;
+            }
+#endif
+
             kvs::KVSMLUnstructuredVolumeObject* kvsml =
                     new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
             kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
@@ -339,12 +354,12 @@ int main(int argc, char* argv[])
             itmp = 1;
             fwrite(&itmp, 4, 1, pfi);
             //座標の最大最小値
-            ftmp[0] = -2.0;
-            ftmp[1] = -2.0;
-            ftmp[2] = 0.0;
-            ftmp[3] = 2.0;
-            ftmp[4] = 2.0;
-            ftmp[5] = 2.0;
+            ftmp[0] = volume_minmax_coord[0];
+            ftmp[1] = volume_minmax_coord[1];
+            ftmp[2] = volume_minmax_coord[2];
+            ftmp[3] = volume_minmax_coord[3];
+            ftmp[4] = volume_minmax_coord[4];
+            ftmp[5] = volume_minmax_coord[5];
             fwrite(&ftmp, 4, 6, pfi);
             //サブボリュームの頂点数
             itmp = nnodes;
