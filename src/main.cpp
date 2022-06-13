@@ -25,60 +25,60 @@
 #include <math.h>
 void WritePFIFile()
 {
-//    FILE *pfi = NULL;
-//    int itmp;
-//    float ftmp[6];
-//    pfi = fopen("./out/tetrahedra.pfi", "wb");
-//    //頂点数
-//    itmp = nnodes;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //要素数
-//    itmp = ncells;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //要素タイプ
-//    itmp = 4;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //ファイルタイプ
-//    itmp = 0;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //ファイル数
-//    itmp = 0;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //成分数(ベクトル?)
-//    itmp = 1;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //開始ステップ
-//    itmp = 0;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //終了ステップ
-//    itmp = 0;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //サブボリューム数
-//    itmp = 1;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //座標の最大最小値
-//    ftmp[0] = -2.0;
-//    ftmp[1] = -2.0;
-//    ftmp[2] = 0.0;
-//    ftmp[3] = 2.0;
-//    ftmp[4] = 2.0;
-//    ftmp[5] = 2.0;
-//    fwrite(&ftmp, 4, 6, pfi);
-//    //サブボリュームの頂点数
-//    itmp = nnodes;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //サブボリュームの要素数
-//    itmp = ncells;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //サブボリュームの座標の最大最小値
-//    fwrite(&ftmp, 4, 6, pfi);
-//    //ステップ1の成分最小値
-//    itmp = 1;
-//    fwrite(&itmp, 4, 1, pfi);
-//    //ステップ1の成分最大値
-//    itmp = 5;
-//    fwrite(&itmp, 4, 1, pfi);
-//    fclose(pfi);
+    //    FILE *pfi = NULL;
+    //    int itmp;
+    //    float ftmp[6];
+    //    pfi = fopen("./out/tetrahedra.pfi", "wb");
+    //    //頂点数
+    //    itmp = nnodes;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //要素数
+    //    itmp = ncells;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //要素タイプ
+    //    itmp = 4;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //ファイルタイプ
+    //    itmp = 0;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //ファイル数
+    //    itmp = 0;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //成分数(ベクトル?)
+    //    itmp = 1;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //開始ステップ
+    //    itmp = 0;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //終了ステップ
+    //    itmp = 0;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //サブボリューム数
+    //    itmp = 1;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //座標の最大最小値
+    //    ftmp[0] = -2.0;
+    //    ftmp[1] = -2.0;
+    //    ftmp[2] = 0.0;
+    //    ftmp[3] = 2.0;
+    //    ftmp[4] = 2.0;
+    //    ftmp[5] = 2.0;
+    //    fwrite(&ftmp, 4, 6, pfi);
+    //    //サブボリュームの頂点数
+    //    itmp = nnodes;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //サブボリュームの要素数
+    //    itmp = ncells;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //サブボリュームの座標の最大最小値
+    //    fwrite(&ftmp, 4, 6, pfi);
+    //    //ステップ1の成分最小値
+    //    itmp = 1;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    //ステップ1の成分最大値
+    //    itmp = 5;
+    //    fwrite(&itmp, 4, 1, pfi);
+    //    fclose(pfi);
 }
 
 void WriteKVSML()
@@ -229,15 +229,27 @@ int main(int argc, char* argv[])
         kvs::ValueArray<kvs::Real32> ValueArray(nnodes * veclen);
         kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * 4);
 
+#ifdef DEBUG
+        std::cout << "nnodes         = " << nnodes << std::endl;
+        std::cout << "ncells         = " << ncells << std::endl;
+        std::cout << "veclen         = " << veclen << std::endl;
+        std::cout << "CoordArray     : " << std::endl;
+#endif
+
         //座標の代入
         for(int i = 0; i < m_nnodes; i++){
             double* point = output->GetPoint(i);
             CoordArray[i * 3] = point[0];
             CoordArray[i * 3 + 1] = point[1];
             CoordArray[i * 3 + 2] = point[2];
-            //std::cout << point[0] << "," << point[1] << "," << point[2] << std::endl;
+#ifdef DEBUG
             std::cout << CoordArray[i * 3] << "," << CoordArray[i * 3 + 1] << "," << CoordArray[i * 3 + 2] << std::endl;
+#endif
         }
+
+#ifdef DEBUG
+        std::cout << "ValueArray     : " << std::endl;
+#endif
 
         //ポイント物理値の代入
         vtkDataArray* pointData_array = NULL;
@@ -247,8 +259,9 @@ int main(int argc, char* argv[])
             for(int j = 0; j < n_pointData_tuples; j++){
                 pointComponents = pointData_array->GetTuple(j);
                 ValueArray[j] = pointComponents[0];
+#ifdef DEBUG
                 std::cout << ValueArray[j] << std::endl;
-                //std::cout << pointComponents[0] << std::endl;
+#endif
             }
         }
 
@@ -259,15 +272,21 @@ int main(int argc, char* argv[])
         for(int i = 0; i < m_nelements; i++){
             vtkCell* element = output->GetCell(i);
             cellType = element->GetCellType();
-            std::cout << "CellType = " << cellType << std::endl;
+#ifdef DEBUG
+            std::cout << "CellType        = " << cellType << std::endl;
+#endif
             int n_points = element->GetNumberOfPoints();
-            std::cout << "n_points = " << n_points << std::endl;
+#ifdef DEBUG
+            std::cout << "n_points        = " << n_points << std::endl;
+            std::cout << "ConnectionArray : " << std::endl;
+#endif
             for(int j = 0; j < n_points; j++){
                 int id1= element->GetPointId(j);
                 new_id = 1 + included_points->InsertNextId(id1);
                 ConnectionArray[j] = id1;
+#ifdef DEBUG
                 std::cout << ConnectionArray[j] << std::endl;
-                //std::cout << id1 << std::endl;
+#endif
             }
 
             kvs::UnstructuredVolumeObject* volume = CreateUnstructuredVolumeObject(cellType,
@@ -290,7 +309,7 @@ int main(int argc, char* argv[])
             int itmp;
             float ftmp[6];
             std::string pfiFileName = "./out/" + fileName + ".pfi";
-//            pfi = fopen("./out/tetrahedra.pfi", "wb");
+            //            pfi = fopen("./out/tetrahedra.pfi", "wb");
             pfi = fopen(pfiFileName.c_str(), "wb");
             //頂点数
             itmp = nnodes;
