@@ -106,69 +106,106 @@ void WriteKVSML()
  * VTK_QUADRATIC_HEXAHEDRON = 25
 */
 
-//enum VTKCellType
-//{
-//    VTK_EMPTY_CELL           = 0,
-//    VTK_VERTEX               = 1,
-//    VTK_POLY_VERTEX          = 2,
-//    VTK_LINE                 = 3,
-//    VTK_POINT_LINE           = 4,
-//    VTK_TRIANGLE             = 5,
-//    VTK_TRIANGLE_STRIPE      = 6,
-//    VTK_POLYGON              = 7,
-//    VTK_PIXEL                = 8,
-//    VTK_QUAD                 = 9,
-//    VTK_TETRA                = 10,
-//    VTK_VOXEL                = 11,
-//    VTK_HEXAHEDRON           = 12,
-//    VTK_WEDGE                = 13,
-//    VTK_PYRAMID              = 14,
-//    VTK_QUADRATIC_TETRA      = 24,
-//    VTK_QUADRATIC_HEXAHEDRON = 25
-//}
+enum VTK_CellType
+{
+    vtk_EMPTY_CELL           = 0,
+    vtk_VERTEX               = 1,
+    vtk_POLY_VERTEX          = 2,
+    vtk_LINE                 = 3,
+    vtk_POINT_LINE           = 4,
+    vtk_TRIANGLE             = 5,
+    vtk_TRIANGLE_STRIPE      = 6,
+    vtk_POLYGON              = 7,
+    vtk_PIXEL                = 8,
+    vtk_QUAD                 = 9,
+    vtk_TETRA                = 10,
+    vtk_VOXEL                = 11,
+    vtk_HEXAHEDRON           = 12,
+    vtk_WEDGE                = 13,
+    vtk_PYRAMID              = 14,
+    vtk_QUADRATIC_TETRA      = 24,
+    vtk_QUADRATIC_HEXAHEDRON = 25
+};
+
+enum PFI_CellType
+{
+    PFI_UnkownCellType       = 0,
+    PFI_Tetrahedra           = 9,
+    PFI_Hexahedra            = 9,
+    PFI_QuadraticTetrahedra  = 9,
+    PFI_QuadraticHexahedra   = 9,
+    PFI_Pyramid              = 9,
+    PFI_Point                = 9,
+    PFI_Prism                =
+};
 kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellType)
 {
-    if(vtk_cellType == 0)//スイッチ文で書いてね
-        return kvs::UnstructuredVolumeObject::UnknownCellType;
-    if(vtk_cellType == 10)
-        return kvs::UnstructuredVolumeObject::Tetrahedra;
-    if(vtk_cellType == 12)
-        return kvs::UnstructuredVolumeObject::Hexahedra;
-    if(vtk_cellType == 24)
-        return kvs::UnstructuredVolumeObject::QuadraticTetrahedra;
-    if(vtk_cellType == 25)
-        return kvs::UnstructuredVolumeObject::QuadraticHexahedra;
-    if(vtk_cellType == 14)
-        return kvs::UnstructuredVolumeObject::Pyramid;
-    if(vtk_cellType == 1)
-        return kvs::UnstructuredVolumeObject::Point;//?
-    if(vtk_cellType == 13) //?
-        return kvs::UnstructuredVolumeObject::Prism;
+
+    enum VTK_CellType vtkCellType;
+    vtkCellType = static_cast<VTK_CellType>(vtk_cellType);
+
+switch(vtkCellType)
+{
+case vtk_EMPTY_CELL:
+    return kvs::UnstructuredVolumeObject::UnknownCellType;
+
+case vtk_TETRA:
+    return kvs::UnstructuredVolumeObject::Tetrahedra;
+
+case vtk_HEXAHEDRON:
+    return kvs::UnstructuredVolumeObject::Hexahedra;
+
+case vtk_QUADRATIC_TETRA:
+    return kvs::UnstructuredVolumeObject::QuadraticTetrahedra;
+
+case vtk_QUADRATIC_HEXAHEDRON:
+    return kvs::UnstructuredVolumeObject::QuadraticHexahedra;
+
+case vtk_PYRAMID:
+    return kvs::UnstructuredVolumeObject::Pyramid;
+
+case vtk_VERTEX:
+    return kvs::UnstructuredVolumeObject::Point;
+
+case vtk_WEDGE:
+    return kvs::UnstructuredVolumeObject::Prism;
+
+default:
+    return kvs::UnstructuredVolumeObject::UnknownCellType;
+}
+
 }
 
 //pfiファイルで使用する非構造格子型要素タイプを取得する関数
 int GetPFIUnstructuredCellType(kvs::UnstructuredVolumeObject::CellType kvs_cellType)
 {
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::UnknownCellType)
-        return 0;//EXIT
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::Tetrahedra)
-        return 4;
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::Hexahedra)
-        return 7;
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::QuadraticTetrahedra)
-        return 0;//?
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::QuadraticHexahedra)
-        return 0;//?
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::Pyramid)
-        return 5;
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::Point)
-        return 0;//?
-    if(kvs_cellType == kvs::UnstructuredVolumeObject::Prism)
-        return 6;
+
+switch(kvs_cellType)
+{
+case kvs::UnstructuredVolumeObject::UnknownCellType:
+    return 0;
+case kvs::UnstructuredVolumeObject::Tetrahedra:
+    return 4;
+case kvs::UnstructuredVolumeObject::Hexahedra:
+    return 7;
+case kvs::UnstructuredVolumeObject::QuadraticTetrahedra:
+    return 0;
+case kvs::UnstructuredVolumeObject::QuadraticHexahedra:
+    return 0;
+case kvs::UnstructuredVolumeObject::Pyramid:
+    return 5;
+case kvs::UnstructuredVolumeObject::Point:
+    return 0;
+case kvs::UnstructuredVolumeObject::Prism:
+    return 6;
+default:
+    return 0;
+}
+
 }
 
 //ボリュームデータを作る関数
-kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int cellType,
+kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int vtk_cellType,
                                                               const size_t nnodes,
                                                               const size_t ncells,
                                                               const size_t veclen,
@@ -177,7 +214,7 @@ kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int cellType,
                                                               kvs::ValueArray<kvs::UInt32> connections)
 {
     kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();
-    object->setCellType( GetKVSUnstructuredCellType(cellType)); //convertVTKCellTypetoKVSCellTYpe(celltype)
+    object->setCellType( GetKVSUnstructuredCellType(vtk_cellType)); //convertVTKCellTypetoKVSCellTYpe(celltype)
     object->setVeclen( veclen );
     object->setNumberOfNodes( nnodes );
     object->setNumberOfCells( ncells );
@@ -189,7 +226,7 @@ kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int cellType,
     object->updateNormalizeParameters();
 #ifdef DEBUG
     std::cout << __FILE__ << ":" << __func__ << ":" << __LINE__    << std::endl;
-    std::cout << cellType << std::endl;
+    std::cout << vtk_cellType << std::endl;
     std::cout << *object << std::endl;
     //    std::cout << object->coords() << std::endl;
     std::cout << connections << std::endl;
@@ -431,9 +468,6 @@ int main(int argc, char* argv[])
         fwrite(&itmp, 4, 1, pfi);
         fclose(pfi);
         delete volume;
-
-
-
     }
 
     return EXIT_SUCCESS;
