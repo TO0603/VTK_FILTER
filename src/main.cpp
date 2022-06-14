@@ -127,17 +127,6 @@ enum VTK_CellType
     vtk_QUADRATIC_HEXAHEDRON = 25
 };
 
-enum PFI_CellType
-{
-    PFI_UnkownCellType       = 0,
-    PFI_Tetrahedra           = 9,
-    PFI_Hexahedra            = 9,
-    PFI_QuadraticTetrahedra  = 9,
-    PFI_QuadraticHexahedra   = 9,
-    PFI_Pyramid              = 9,
-    PFI_Point                = 9,
-    PFI_Prism                =
-};
 kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellType)
 {
 
