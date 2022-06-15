@@ -22,8 +22,8 @@ int main(int argc, char* argv[])
     FilterVTK *filterVTK = new FilterVTK();
     filterVTK->readVTKFile(inputFilename);
 
-    CreatePFI *createPFI = new CreatePFI(*filterVTK);
-    createPFI->setCoordArray();
+    CreatePFI *createPFI = new CreatePFI(fileName,*filterVTK);
+//    createPFI->setCoordArray();
 
     return EXIT_SUCCESS;
 }
