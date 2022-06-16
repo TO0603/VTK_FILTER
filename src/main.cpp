@@ -1,9 +1,9 @@
 #include <string>
 #include <iostream>
 
-#include <VTKParameterReader.h>
+#include <VTKFormat.h>
 #include <CreatePFIFile.h>
-#include <CreateVolumeObject.h>
+#include <SetVolumeObject.h>
 int main(int argc, char* argv[])
 {
     //コマンドライン引数に何か入力されているかを判別
@@ -19,13 +19,14 @@ int main(int argc, char* argv[])
     int ext_i = inputFilename.find_last_of(".");
     std::string fileName = inputFilename.substr(path_i,ext_i-path_i);
 
-    VTKParameterReader *vtk_parameter_reader = new VTKParameterReader();
-    vtk_parameter_reader->read(inputFilename);
+    VTKFormat *vtk = new VTKFormat();
+    vtk->read(inputFilename);
+    vtk->generate();
 
-    CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk_parameter_reader);
-    std::string kvsml_filename = createPFI->getKVSMLFileName();
+    CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
+    std::string kvsml_filename = createPFI->KVSMLFileName();
 
-    kvs::UnstructuredVolumeObject* volume = new CreateVolumeObject(*vtk_parameter_reader);
+    kvs::UnstructuredVolumeObject* volume = new SetVolumeObject(*vtk);
     createPFI->createPFIFile(volume);
 
     kvs::KVSMLUnstructuredVolumeObject* kvsml =
@@ -33,5 +34,6 @@ int main(int argc, char* argv[])
     kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
     kvsml->write(kvsml_filename);
 
+    std::cout << "EXIT" << std::endl;
     return EXIT_SUCCESS;
 }

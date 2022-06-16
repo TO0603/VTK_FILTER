@@ -1,7 +1,7 @@
 #include "CreatePFIFile.h"
 
 //CreatePFI::CreatePFI(long long nnodes,long long ncells, int nveclens, int npoints):
-CreatePFIFile::CreatePFIFile(std::string fileName, VTKParameterReader filterVTK):
+CreatePFIFile::CreatePFIFile(std::string fileName, VTKFormat filterVTK):
     m_nnodes(filterVTK.getNumberOfNodes()),
     m_ncells(filterVTK.getNumberOfElements()),
     m_nveclen(filterVTK.getNumberOfKinds()),

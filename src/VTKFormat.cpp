@@ -1,6 +1,6 @@
-#include "VTKParameterReader.h"
+#include "VTKFormat.h"
 
-VTKParameterReader::VTKParameterReader():
+VTKFormat::VTKFormat():
     m_output( nullptr ),
     m_nfield_data_in_file( 0 ),
     m_nscalars_in_file( 0 ),
@@ -21,16 +21,24 @@ VTKParameterReader::VTKParameterReader():
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 }
 
-void VTKParameterReader::read(std::string input_vtk_file)
+void VTKFormat::read(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    vtkNew<vtkGenericDataObjectReader> reader;
+    vtkSmartPointer<vtkGenericDataObjectReader> reader = vtkGenericDataObjectReader::New();
+
     reader->SetFileName(input_vtk_file.c_str());
     reader->Update();
-    check_vtk_data_set_type(reader);
+
+    m_reader = reader;
 }
 
-void VTKParameterReader::setCoordArray()
+void VTKFormat::generate()
+{
+    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    check_vtk_data_set_type(m_reader);
+}
+
+void VTKFormat::setCoordArray()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     for( int i = 0; i < m_nnodes; i++ )
@@ -46,7 +54,7 @@ void VTKParameterReader::setCoordArray()
     }
 }
 
-void VTKParameterReader::setValueArray()
+void VTKFormat::setValueArray()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 #ifdef VALUE_DEBUG
@@ -82,7 +90,7 @@ void VTKParameterReader::setValueArray()
     //    }
 }
 
-void VTKParameterReader::setConnectionArray()
+void VTKFormat::setConnectionArray()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     int new_id;
@@ -108,7 +116,7 @@ void VTKParameterReader::setConnectionArray()
 }
 
 
-void VTKParameterReader::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
+void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     if(reader->IsFilePolyData())
@@ -122,7 +130,7 @@ void VTKParameterReader::check_vtk_data_set_type(vtkGenericDataObjectReader *rea
     }
 }
 
-void VTKParameterReader::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
+void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     //    auto output = reader->GetUnstructuredGridOutput();

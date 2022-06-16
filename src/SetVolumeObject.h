@@ -2,8 +2,8 @@
 #define CREATEVOLUMEOBJECT_H
 
 #include <kvs/UnstructuredVolumeObject>
-#include <VTKParameterReader.h>
-class CreateVolumeObject : public kvs::UnstructuredVolumeObject
+#include <VTKFormat.h>
+class SetVolumeObject : public kvs::UnstructuredVolumeObject
 {
 private:
     const size_t m_nnodes;
@@ -15,7 +15,7 @@ private:
     int m_vtk_cell_type;
     float m_volume_min_max_coord[6];
 public:
-    CreateVolumeObject(VTKParameterReader vtk_parameter_reader);
+    SetVolumeObject(VTKFormat vtk_parameter_reader);
 private:
     kvs::UnstructuredVolumeObject::CellType convert_vtk_cell_type_to_kvs_cell_type(int vtk_cell_type);
     kvs::UnstructuredVolumeObject* create_unstructured_volume_object();

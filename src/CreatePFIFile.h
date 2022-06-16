@@ -3,7 +3,7 @@
 #include <kvs/UnstructuredVolumeObject>
 #include <kvs/UnstructuredVolumeExporter>
 #include <kvs/KVSMLUnstructuredVolumeObject>
-#include "VTKParameterReader.h"
+#include "VTKFormat.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,9 +24,9 @@ private:
 //    float m_volume_min_max_coord[6];
     std::string m_file_name;
 public:
-    CreatePFIFile(std::string fileName,VTKParameterReader vtk_parameter_reader);    
-    std::string getKVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_0000001.kvsml"; }
-    void setKVSMLFileName(std::string file_name) { m_file_name = file_name; } //?
+    CreatePFIFile(std::string fileName,VTKFormat vtk_parameter_reader);
+    std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_0000001.kvsml"; }
+    void setFileName(std::string file_name) { m_file_name = file_name; } //?
     void createPFIFile(kvs::UnstructuredVolumeObject*);
 private:
     int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);

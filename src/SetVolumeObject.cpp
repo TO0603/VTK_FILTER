@@ -1,6 +1,6 @@
-#include "CreateVolumeObject.h"
+#include "SetVolumeObject.h"
 
-CreateVolumeObject::CreateVolumeObject(VTKParameterReader vtk_parameter_reader):
+SetVolumeObject::SetVolumeObject(VTKFormat vtk_parameter_reader):
     m_nnodes(vtk_parameter_reader.getNumberOfNodes()),
     m_ncells(vtk_parameter_reader.getNumberOfElements()),
     m_nveclen(vtk_parameter_reader.getNumberOfKinds()),
@@ -22,7 +22,7 @@ CreateVolumeObject::CreateVolumeObject(VTKParameterReader vtk_parameter_reader):
     create_unstructured_volume_object();
 }
 
-kvs::UnstructuredVolumeObject::CellType CreateVolumeObject::convert_vtk_cell_type_to_kvs_cell_type(int vtk_cellType)
+kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_to_kvs_cell_type(int vtk_cellType)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     VTKCellType vtkCellType;
@@ -58,7 +58,7 @@ kvs::UnstructuredVolumeObject::CellType CreateVolumeObject::convert_vtk_cell_typ
     }
 }
 
-kvs::UnstructuredVolumeObject* CreateVolumeObject::create_unstructured_volume_object()
+kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_object()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();

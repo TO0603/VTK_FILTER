@@ -16,10 +16,12 @@
 
 #include <kvs/ValueArray>
 
-class VTKParameterReader
+class VTKFormat
 {
 
 private:
+//    vtkNew<vtkGenericDataObjectReader>* m_reader;
+    vtkGenericDataObjectReader* m_reader;
     vtkDataSet* m_output;
     int m_nfield_data_in_file;
     int m_nscalars_in_file;
@@ -42,8 +44,9 @@ private:
 
 
 public:
-    VTKParameterReader();
+    VTKFormat();
     void read(std::string input_vtk_file);
+    void generate();
     long long getNumberOfNodes() { return m_nnodes; }
     long long getNumberOfElements() { return m_nelements; }
     int getNumberOfKinds() { return m_nkinds; }
