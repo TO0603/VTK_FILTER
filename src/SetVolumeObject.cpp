@@ -11,13 +11,13 @@ SetVolumeObject::SetVolumeObject(VTKFormat vtk_parameter_reader):
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 #ifdef VALUE_DEBUG
-    std::cout << m_nnodes           << std::endl;
-    std::cout << m_ncells           << std::endl;
-    std::cout << m_nveclen          << std::endl;
-    std::cout << m_coord_array      << std::endl;
-    std::cout << m_value_array      << std::endl;
-    std::cout << m_connection_array << std::endl;
-    std::cout << m_vtk_cell_type    << std::endl;
+    std::cout << "m_nnodes           = " << m_nnodes           << std::endl;
+    std::cout << "m_ncells           = " << m_ncells           << std::endl;
+    std::cout << "m_nveclen          = " << m_nveclen          << std::endl;
+    std::cout << "m_coord_array      = " << m_coord_array      << std::endl;
+    std::cout << "m_value_array      = " << m_value_array      << std::endl;
+    std::cout << "m_connection_array = " << m_connection_array << std::endl;
+    std::cout << "m_vtk_cell_type    = " << m_vtk_cell_type    << std::endl;
 #endif
     create_unstructured_volume_object();
 }
