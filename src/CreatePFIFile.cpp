@@ -54,7 +54,6 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     int itmp;
     float ftmp[6];
     std::string pfiFileName = "./out/" + m_file_name + ".pfi";
-    //            pfi = fopen("./out/tetrahedra.pfi", "wb");
 
 #ifdef VALUE_DEBUG
     std::cout << "m_nnodes                 = " << m_nnodes                  << std::endl;
