@@ -146,7 +146,7 @@ void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
     m_ncell_data_tuples               = m_cell_data->GetNumberOfTuples();
     m_nnodes                          = m_output->GetNumberOfPoints();
     m_nelements                       = m_output->GetNumberOfCells();
-    m_nkinds                          = m_npoint_data_components + m_ncell_data_components;
+    m_nkinds                          = m_nscalars_in_file;
     m_npoints                         = m_output->GetCell( 0 )->GetNumberOfPoints();
     m_coord_array.allocate(m_nnodes * 3);
     m_value_array.allocate(m_nnodes * m_nkinds);
