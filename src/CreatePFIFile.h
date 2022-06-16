@@ -21,7 +21,6 @@ private:
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
     int m_cell_type;
-//    float m_volume_min_max_coord[6];
     std::string m_file_name;
 public:
     CreatePFIFile(std::string fileName,VTKFormat vtk_parameter_reader);
@@ -29,8 +28,7 @@ public:
     void setFileName(std::string file_name) { m_file_name = file_name; } //?
     void createPFIFile(kvs::UnstructuredVolumeObject*);
 private:
-    int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);
-    //    void create_pfi_file(kvs::UnstructuredVolumeObject*);
+    int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);    
 };
 
 #endif // CREATEPFI_H

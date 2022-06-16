@@ -133,9 +133,6 @@ void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
 void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //    auto output = reader->GetUnstructuredGridOutput();
-    //    vtkDataSet* output = reader->GetUnstructuredGridOutput();
-
     m_output                          = reader->GetUnstructuredGridOutput();
     m_nfield_data_in_file             = reader->GetNumberOfFieldDataInFile();
     m_nscalars_in_file                = reader->GetNumberOfScalarsInFile();

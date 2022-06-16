@@ -62,7 +62,7 @@ kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_objec
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();
-    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type(m_vtk_cell_type)); //convertVTKCellTypetoKVSCellTYpe(celltype)
+    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type(m_vtk_cell_type));
     this->setVeclen( m_nveclen );
     this->setNumberOfNodes( m_nnodes );
     this->setNumberOfCells( m_ncells );

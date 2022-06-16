@@ -1,6 +1,5 @@
 #include "CreatePFIFile.h"
 
-//CreatePFI::CreatePFI(long long nnodes,long long ncells, int nveclens, int npoints):
 CreatePFIFile::CreatePFIFile(std::string fileName, VTKFormat filterVTK):
     m_nnodes(filterVTK.getNumberOfNodes()),
     m_ncells(filterVTK.getNumberOfElements()),
@@ -94,12 +93,6 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     itmp = 1;
     fwrite(&itmp, 4, 1, pfi);
     //座標の最大最小値
-    //    ftmp[0] = m_volume_min_max_coord[0];
-    //    ftmp[1] = m_volume_min_max_coord[1];
-    //    ftmp[2] = m_volume_min_max_coord[2];
-    //    ftmp[3] = m_volume_min_max_coord[3];
-    //    ftmp[4] = m_volume_min_max_coord[4];
-    //    ftmp[5] = m_volume_min_max_coord[5];
     ftmp[0] = volume->minObjectCoord().x();
     ftmp[1] = volume->minObjectCoord().y();
     ftmp[2] = volume->minObjectCoord().z();
