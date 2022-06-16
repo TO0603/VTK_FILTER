@@ -11,6 +11,13 @@
 #include <vtkCell.h>
 #include <vtkDataArray.h>
 #include <vtkIdList.h>
+#include <vtkGenericEnSightReader.h>
+#include <vtkEnSightReader.h>
+#include <vtkEnSightGoldReader.h>
+#include <vtkEnSightGoldBinaryReader.h>
+#include <vtkMultiBlockDataSet.h>
+#include <vtkAppendFilter.h>
+#include <vtkUnstructuredGridWriter.h>
 
 #include <kvs/glut/Application>
 #include <kvs/glut/Screen>
@@ -23,94 +30,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-void WritePFIFile()
-{
-    //    FILE *pfi = NULL;
-    //    int itmp;
-    //    float ftmp[6];
-    //    pfi = fopen("./out/tetrahedra.pfi", "wb");
-    //    //頂点数
-    //    itmp = nnodes;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //要素数
-    //    itmp = ncells;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //要素タイプ
-    //    itmp = 4;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //ファイルタイプ
-    //    itmp = 0;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //ファイル数
-    //    itmp = 0;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //成分数(ベクトル?)
-    //    itmp = 1;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //開始ステップ
-    //    itmp = 0;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //終了ステップ
-    //    itmp = 0;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //サブボリューム数
-    //    itmp = 1;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //座標の最大最小値
-    //    ftmp[0] = -2.0;
-    //    ftmp[1] = -2.0;
-    //    ftmp[2] = 0.0;
-    //    ftmp[3] = 2.0;
-    //    ftmp[4] = 2.0;
-    //    ftmp[5] = 2.0;
-    //    fwrite(&ftmp, 4, 6, pfi);
-    //    //サブボリュームの頂点数
-    //    itmp = nnodes;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //サブボリュームの要素数
-    //    itmp = ncells;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //サブボリュームの座標の最大最小値
-    //    fwrite(&ftmp, 4, 6, pfi);
-    //    //ステップ1の成分最小値
-    //    itmp = 1;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    //ステップ1の成分最大値
-    //    itmp = 5;
-    //    fwrite(&itmp, 4, 1, pfi);
-    //    fclose(pfi);
-}
 
-void WriteKVSML()
-{
+#include <vtkSmartPointer.h>
 
-}
-//VTKの要素タイプをKVSの非構造格子型要素タイプに変換する。
-/*
- * VTK_EMPTY_CELL           = 0
- * VTK_VERTEX               = 1
- * VTK_POLY_VERTEX          = 2
- * VTK_LINE                 = 3
- * VTK_POINT_LINE           = 4
- * VTK_TRIANGLE             = 5
- * VTK_TRIANGLE_STRIPE      = 6
- * VTK_POLYGON              = 7
- * VTK_PIXEL                = 8
- * VTK_QUAD                 = 9
- * VTK_TETRA                = 10
- * VTK_VOXEL                = 11
- * VTK_HEXAHEDRON           = 12
- * VTK_WEDGE                = 13
- * VTK_PYRAMID              = 14
- * VTK_QUADRATIC_TETRA      = 24
- * VTK_QUADRATIC_HEXAHEDRON = 25
-*/
+#include <vtkProperty.h>
+#include <vtkCellCenters.h>
 
-//enum VTKCellType
-//{
-//    Hexahedra = 12,
-//    Pyramid = 14
-//}
 kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellType)
 {
     if(vtk_cellType == 0)
@@ -128,7 +53,7 @@ kvs::UnstructuredVolumeObject::CellType GetKVSUnstructuredCellType(int vtk_cellT
     if(vtk_cellType == 1)
         return kvs::UnstructuredVolumeObject::Point;//?
     if(vtk_cellType == 13) //?
-        return kvs::UnstructuredVolumeObject::Prism;
+       return kvs::UnstructuredVolumeObject::Prism;
 }
 
 //pfiファイルで使用する非構造格子型要素タイプを取得する関数
@@ -181,68 +106,113 @@ kvs::UnstructuredVolumeObject* CreateUnstructuredVolumeObject(int cellType,
     return object;
 }
 
-
-
-int main(int argc, char* argv[])
+//int main (int argc, char *argv[])
+int main ( )
 {
-    //コマンドライン引数で.vtkファイルを指定しているかどうかを判別
-    if (argc != 2)
-    {
-        std::cerr << "Usage: " << argv[0] << " InputFilename e.g. hoge.vtk" << endl;
-        return EXIT_FAILURE;
-    }
+    //std::string filename = "/Users/shimomurakazuya/SGI/EnsightGold/";
+    //std::string filename_case = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
+    std::string filename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk";
+    std::string filename_case = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/hex.case";
 
-    //コマンドライン引数からファイル名を取得
-    std::string inputFilename = argv[1];
+    vtkNew<vtkEnSightGoldBinaryReader> EGBreader;
+    //reader->SetByteOrderToLittleEndian (); 
+    //reader->SetFilePath(filename.c_str());
+    EGBreader->SetCaseFileName(filename_case.c_str());
+    EGBreader->ReadAllVariablesOn(); 
+    EGBreader->Update();
+
+    vtkMultiBlockDataSet*  output = EGBreader->GetOutput();
+    //auto output = reader->GetUnstructuredGridOutput();
+    vtkDataObject* block0 = output->GetBlock(0);
+    //auto array = block0->GetCellData();
+    //auto array = block0->GetPointData();
+    //auto scl1 = array->GetArray("scalar1");
+
+    vtkNew<vtkAppendFilter> append;
+    append->AddInputData(block0);
+    append->Update();
+
+    vtkNew<vtkUnstructuredGrid> unstructuredGrid;
+    unstructuredGrid->ShallowCopy(append->GetOutput());    
+
+    //debug output vtkfile
+    //vtkNew<vtkUnstructuredGridWriter> ugwriter;
+    //ugwriter->SetInputData(unstructuredGrid);
+    //ugwriter->SetFileName("test.vtk");
+    //ugwriter->Write();
+
+    // debug
+    vtkPointData* point_data   = unstructuredGrid->GetPointData();
+    vtkCellData* cell_data     = unstructuredGrid->GetCellData();
+    int n_pointData_arrays     = point_data->GetNumberOfArrays();
+    int n_pointData_components = point_data->GetNumberOfComponents();
+    int n_pointData_tuples     = point_data->GetNumberOfTuples();
+    int n_cellData_arrays      = cell_data->GetNumberOfArrays();
+    int n_cellData_components  = cell_data->GetNumberOfComponents();
+    int n_cellData_tuples      = cell_data->GetNumberOfTuples();
+    long long m_nnodes         = unstructuredGrid->GetNumberOfPoints();
+    long long m_nelements      = unstructuredGrid->GetNumberOfCells();
+    int m_nkinds               = n_pointData_components + n_cellData_components;
+
+    std::cout << "n_pointData_arrays = "<< n_pointData_arrays << std::endl;
+    std::cout << "n_pointData_components = "<< n_pointData_components << std::endl;
+    std::cout << "n_pointData_tuples = "<< n_pointData_tuples << std::endl;
+    std::cout << "n_cellData_arrays = "<< n_cellData_arrays << std::endl;
+    std::cout << "n_cellData_components = "<< n_cellData_components << std::endl;
+    std::cout << "n_cellData_tuples = "<< n_cellData_tuples << std::endl;
+    std::cout << "m_nnodes = " << m_nnodes << std::endl;
+    std::cout << "m_nelements = " << m_nelements << std::endl;
+
+//    //コマンドライン引数からファイル名を取得
+    std::string inputFilename = "test.vtk";
     int path_i = inputFilename.find_last_of("/") + 1;
     int ext_i = inputFilename.find_last_of(".");
-    std::string fileName = inputFilename.substr(path_i,ext_i-path_i);
-
-    //vtkのデータを取得
-    vtkNew<vtkGenericDataObjectReader> reader;
-    reader->SetFileName(inputFilename.c_str());
-    reader->Update();
-
-    //標準的なデータ型を取得する(あくまで例)
-    if (reader->IsFilePolyData())
-    {
-        std::cout << "output is polydata," << std::endl;
-        auto output = reader->GetPolyDataOutput();
-        std::cout << "   output has " << output->GetNumberOfPoints() << " points." << std::endl;
-    }
-
-    if (reader->IsFileUnstructuredGrid())
-    {
-        //vtkデータから値を取得
-        std::cout << "output is unstructured grid," << std::endl;
-        auto output                = reader->GetUnstructuredGridOutput();
-        int n_file_fields          = reader->GetNumberOfFieldDataInFile();
-        int n_file_scalars         = reader->GetNumberOfScalarsInFile();
-        vtkPointData* point_data   = output->GetPointData();
-        vtkCellData* cell_data     = output->GetCellData();
-        int n_pointData_arrays     = point_data->GetNumberOfArrays();
-        int n_pointData_components = point_data->GetNumberOfComponents();
-        int n_pointData_tuples     = point_data->GetNumberOfTuples();
-        int n_cellData_arrays      = cell_data->GetNumberOfArrays();
-        int n_cellData_components  = cell_data->GetNumberOfComponents();
-        int n_cellData_tuples      = cell_data->GetNumberOfTuples();
-        long long m_nnodes         = output->GetNumberOfPoints();
-        long long m_nelements      = output->GetNumberOfCells();
-        int m_nkinds               = n_pointData_components + n_cellData_components;
-
-#ifdef DEBUG
-        std::cout << "m_nnodes = " << m_nnodes << std::endl;
-        std::cout << "m_nelements = " << m_nelements << std::endl;
-        std::cout << "n_file_fields = " << n_file_fields << std::endl;
-        std::cout << "n_file_scalars = " << n_file_scalars << std::endl;
-        std::cout << "n_pointData_arrays = "<< n_pointData_arrays << std::endl;
-        std::cout << "n_pointData_components = "<< n_pointData_components << std::endl;
-        std::cout << "n_pointData_tuples = "<< n_pointData_tuples << std::endl;
-        std::cout << "n_cellData_arrays = "<< n_cellData_arrays << std::endl;
-        std::cout << "n_cellData_components = "<< n_cellData_components << std::endl;
-        std::cout << "n_cellData_tuples = "<< n_cellData_tuples << std::endl;
-        std::cout << "veclen = " << m_nkinds << std::endl;
-#endif
+    std::string fileName = inputFilename.substr(path_i,ext_i-path_i) ;
+//
+//    //vtkのデータを取得
+//    vtkNew<vtkGenericDataObjectReader> reader;
+//    reader->SetFileName(inputFilename.c_str());
+//    reader->Update();
+//
+//    //標準的なデータ型を取得する(あくまで例)
+//    if (reader->IsFilePolyData())
+//    {
+//        std::cout << "output is polydata," << std::endl;
+//        auto output = reader->GetPolyDataOutput();
+//        std::cout << "   output has " << output->GetNumberOfPoints() << " points." << std::endl;
+//    }
+//
+//    if (reader->IsFileUnstructuredGrid())
+//    {
+//        //vtkデータから値を取得
+//        std::cout << "output is unstructured grid," << std::endl;
+//        auto output                = reader->GetUnstructuredGridOutput();
+//        int n_file_fields          = reader->GetNumberOfFieldDataInFile();
+//        int n_file_scalars         = reader->GetNumberOfScalarsInFile();
+//        vtkPointData* point_data   = output->GetPointData();
+//        vtkCellData* cell_data     = output->GetCellData();
+//        int n_pointData_arrays     = point_data->GetNumberOfArrays();
+//        int n_pointData_components = point_data->GetNumberOfComponents();
+//        int n_pointData_tuples     = point_data->GetNumberOfTuples();
+//        int n_cellData_arrays      = cell_data->GetNumberOfArrays();
+//        int n_cellData_components  = cell_data->GetNumberOfComponents();
+//        int n_cellData_tuples      = cell_data->GetNumberOfTuples();
+//        long long m_nnodes         = output->GetNumberOfPoints();
+//        long long m_nelements      = output->GetNumberOfCells();
+//        int m_nkinds               = n_pointData_components + n_cellData_components;
+//
+////#ifdef DEBUG
+//        std::cout << "m_nnodes = " << m_nnodes << std::endl;
+//        std::cout << "m_nelements = " << m_nelements << std::endl;
+//        std::cout << "n_file_fields = " << n_file_fields << std::endl;
+//        std::cout << "n_file_scalars = " << n_file_scalars << std::endl;
+//        std::cout << "n_pointData_arrays = "<< n_pointData_arrays << std::endl;
+//        std::cout << "n_pointData_components = "<< n_pointData_components << std::endl;
+//        std::cout << "n_pointData_tuples = "<< n_pointData_tuples << std::endl;
+//        std::cout << "n_cellData_arrays = "<< n_cellData_arrays << std::endl;
+//        std::cout << "n_cellData_components = "<< n_cellData_components << std::endl;
+//        std::cout << "n_cellData_tuples = "<< n_cellData_tuples << std::endl;
+////#endif
 
         //取得した値をKVSのボリュームデータ作成に必要なものに代入
         const size_t nnodes        = m_nnodes;
@@ -251,7 +221,7 @@ int main(int argc, char* argv[])
         kvs::ValueArray<kvs::Real32> CoordArray(nnodes * 3);
         kvs::ValueArray<kvs::Real32> ValueArray(nnodes * veclen);
         //        kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * 8);
-        kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * output->GetCell(0)->GetNumberOfPoints());
+        kvs::ValueArray<kvs::UInt32> ConnectionArray(ncells * unstructuredGrid->GetCell(0)->GetNumberOfPoints());
         //PFIファイルの作成に必要な変数
         float volume_minmax_coord[6];
 
@@ -264,7 +234,7 @@ int main(int argc, char* argv[])
 
         //座標の代入
         for(int i = 0; i < m_nnodes; i++){
-            double* point = output->GetPoint(i);
+            double* point = unstructuredGrid->GetPoint(i);
             CoordArray[i * 3] = point[0];
             CoordArray[i * 3 + 1] = point[1];
             CoordArray[i * 3 + 2] = point[2];
@@ -297,7 +267,7 @@ int main(int argc, char* argv[])
         vtkNew<vtkIdList> included_points;
         int connection_index = 0;
         for(int i = 0; i < m_nelements; i++){
-            vtkCell* element = output->GetCell(i);
+            vtkCell* element = unstructuredGrid->GetCell(i);
             cellType = element->GetCellType();
 #ifdef DEBUG
             //            std::cout << "CellType        = " << cellType << std::endl;
@@ -319,9 +289,6 @@ int main(int argc, char* argv[])
 #endif
             }
         }
-
-
-
 
         kvs::UnstructuredVolumeObject* volume = CreateUnstructuredVolumeObject(cellType,
                                                                                nnodes,
@@ -409,10 +376,10 @@ int main(int argc, char* argv[])
         fwrite(&itmp, 4, 1, pfi);
         fclose(pfi);
         delete volume;
+//    }
 
+        return EXIT_SUCCESS;
 
-
-    }
-
-    return EXIT_SUCCESS;
 }
+
+
