@@ -16,25 +16,25 @@
 
 #include <kvs/ValueArray>
 
-class FilterVTK
+class VTKParameterReader
 {
 
 private:
     vtkDataSet* m_output;
-    int m_number_of_field_data_in_file;
-    int m_number_of_scalars_in_file;
+    int m_nfield_data_in_file;
+    int m_nscalars_in_file;
     vtkPointData* m_point_data;
     vtkCellData* m_cell_data;
-    int m_number_of_point_data_arrays;//m_npoint_data_arrays
-    int m_number_of_point_data_components;
-    int m_number_of_point_data_tuples;
-    int m_number_of_cell_data_arrays;
-    int m_number_of_cell_data_components;
-    int m_number_of_cell_data_tuples;
-    long long m_number_of_nodes;
-    long long m_number_of_elements;
-    int m_number_of_kinds;
-    int m_number_of_points;
+    int m_npoint_data_arrays;//m_npoint_data_arrays
+    int m_npoint_data_components;
+    int m_npoint_data_tuples;
+    int m_ncell_data_arrays;
+    int m_ncell_data_components;
+    int m_ncell_data_tuples;
+    long long m_nnodes;
+    long long m_nelements;
+    int m_nkinds;
+    int m_npoints;
     int m_cell_type;
     kvs::ValueArray<kvs::Real32> m_coord_array;//m_coords
     kvs::ValueArray<kvs::Real32> m_value_array;
@@ -42,13 +42,20 @@ private:
 
 
 public:
-    FilterVTK();
-    void readVTKFile(std::string input_vtk_file);
-    long long getNumberOfNodes()    { return m_number_of_nodes; }
-    long long getNumberOfElements() { return m_number_of_elements; }
-    int getNumberOfKinds()    { return m_number_of_kinds; }
-    int getNumberOfPoints()   { return m_number_of_points; }
+    VTKParameterReader();
+    void read(std::string input_vtk_file);
+    long long getNumberOfNodes() { return m_nnodes; }
+    long long getNumberOfElements() { return m_nelements; }
+    int getNumberOfKinds() { return m_nkinds; }
+    int getNumberOfPoints() { return m_npoints; }
     int getCellType() { return m_cell_type; }
+
+    void setNumberOfNodes(long long nnodes) { m_nnodes = nnodes; }
+    void setNumberOfElements(long long nelements) { m_nelements = nelements; }
+    void setNumberOfKinds(int nkinds) { m_nkinds = nkinds; }
+    void setNumberOfPoints(int npoints) {  m_npoints = npoints; }
+    void setCellType(int cell_type) {  m_cell_type = cell_type; }
+
     kvs::ValueArray<kvs::Real32> getCoordArray() { return m_coord_array; }
     kvs::ValueArray<kvs::Real32> getValuewArray() { return m_value_array; }
     kvs::ValueArray<kvs::UInt32> getConnectionArray() { return m_connection_array; }
