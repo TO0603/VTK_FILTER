@@ -2,7 +2,7 @@
 
 SetVolumeObject::SetVolumeObject(VTKFormat vtk_parameter_reader):
     m_nnodes(vtk_parameter_reader.getNumberOfNodes()),
-    m_ncells(vtk_parameter_reader.getNumberOfElements()),
+    m_ncells(vtk_parameter_reader.getNumberOfCells()),
     m_nveclen(vtk_parameter_reader.getNumberOfKinds()),
     m_coord_array(vtk_parameter_reader.getCoordArray()),
     m_value_array(vtk_parameter_reader.getValuewArray()),

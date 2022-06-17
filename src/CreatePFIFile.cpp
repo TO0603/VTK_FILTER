@@ -2,7 +2,7 @@
 
 CreatePFIFile::CreatePFIFile(std::string fileName, VTKFormat filterVTK):
     m_nnodes(filterVTK.getNumberOfNodes()),
-    m_ncells(filterVTK.getNumberOfElements()),
+    m_ncells(filterVTK.getNumberOfCells()),
     m_nveclen(filterVTK.getNumberOfKinds()),
     m_coord_array(filterVTK.getCoordArray()),
     m_value_array(filterVTK.getValuewArray()),
