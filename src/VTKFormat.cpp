@@ -24,7 +24,6 @@ VTKFormat::VTKFormat():
 void VTKFormat::read(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //vtkSmartPointer<vtkGenericDataObjectReader> reader = vtkGenericDataObjectReader::New();
     vtkSmartPointer<vtkEnSightGoldBinaryReader> reader = vtkEnSightGoldBinaryReader::New();
 
     reader->SetCaseFileName(input_vtk_file.c_str());
@@ -36,7 +35,6 @@ void VTKFormat::read(std::string input_vtk_file)
     append->AddInputData(block);
     append->Update();
 
-    //vtkNew<vtkUnstructuredGrid> unstructuredGrid;
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
     unstructuredGrid->ShallowCopy(append->GetOutput());       
     m_reader = unstructuredGrid;
@@ -111,7 +109,6 @@ void VTKFormat::setConnectionArray()
     int connection_index = 0;
     for(int i = 0; i < m_nelements; i++)
     {
-        //vtkCell* element = m_output->GetCell(i);
         vtkCell* element = m_reader->GetCell(i);
         m_cell_type = element->GetCellType();
         int n_points = element->GetNumberOfPoints();
@@ -129,7 +126,6 @@ void VTKFormat::setConnectionArray()
 }
 
 
-//void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
 void VTKFormat::check_vtk_data_set_type(vtkUnstructuredGrid *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
@@ -142,20 +138,14 @@ void VTKFormat::check_vtk_data_set_type(vtkUnstructuredGrid *reader)
 //        std::cout << "VTK DATASET TYPE IS UnstructuredGrid" << std::endl;
 //        read_vtk_file_parameter(reader);
 //    }
-    m_point_data                      = reader->GetPointData();
-    m_npoint_data_arrays              = m_point_data->GetNumberOfArrays();
-    std::cout << "m_npoint_data_arrays     = " << m_npoint_data_arrays     << std::endl;
 
     read_vtk_file_parameter(reader);
 }
 
-//void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
 void VTKFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     //m_output                          = reader->GetUnstructuredGridOutput();
-    //m_nfield_data_in_file             = reader->GetNumberOfFieldDataInFile();
-    //m_nscalars_in_file                = reader->GetNumberOfScalarsInFile();
     m_point_data                      = reader->GetPointData();
     m_cell_data                       = reader->GetCellData();
     m_npoint_data_arrays              = m_point_data->GetNumberOfArrays();
@@ -173,8 +163,6 @@ void VTKFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     m_connection_array.allocate(m_nelements * m_npoints);
 
 #ifdef VALUE_DEBUG
-    //std::cout << "m_nfield_data_in_file    = " << m_nfield_data_in_file    << std::endl;
-    //std::cout << "m_nscalars_in_file       = " << m_nscalars_in_file       << std::endl;
     //    std::cout << "m_point_data                      = " << m_point_data                      << std::endl;
     //    std::cout << "m_cell_data                       = " << m_cell_data                       << std::endl;
     std::cout << "m_npoint_data_arrays     = " << m_npoint_data_arrays     << std::endl;
