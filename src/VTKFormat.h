@@ -52,7 +52,7 @@ public:
     int getCellType() { return m_cell_type; }
 
     void setNumberOfNodes(long long nnodes) { m_nnodes = nnodes; }
-    void setNumberOfElements(long long nelements) { m_ncells = nelements; }
+    void setNumberOfElements(long long ncells) { m_ncells = ncells; }
     void setNumberOfKinds(int nkinds) { m_nkinds = nkinds; }
     void setNumberOfPoints(int npoints) {  m_npoints = npoints; }
     void setCellType(int cell_type) {  m_cell_type = cell_type; }
