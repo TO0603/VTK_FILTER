@@ -47,8 +47,7 @@ void VTKFormat::setCoordArray()
         m_coord_array[i * 3] = point[0];
         m_coord_array[i * 3 + 1] = point[1];
         m_coord_array[i * 3 + 2] = point[2];
-#ifdef VALUE_DEBUG
-        //        std::cout << "[" << i << "]" << m_coord_array[i * 3] << "," << m_coord_array[i * 3 + 1] << "," << m_coord_array[i * 3 + 2] << std::endl;
+#ifdef VALUE_DEBUG        
         std::cout << "m_coord_array[" << i << "] = " << m_coord_array[i * 3] << "," << m_coord_array[i * 3 + 1] << "," << m_coord_array[i * 3 + 2] << std::endl;
 #endif
     }
@@ -70,31 +69,17 @@ void VTKFormat::setValueArray()
         {
             point_components = point_data_array->GetTuple(j);
             m_value_array[value_index] = point_components[0];
-#ifdef VALUE_DEBUG
-            //            std::cout << "[" << j << "]" << m_value_array[j] << std::endl;
+#ifdef VALUE_DEBUG            
             std::cout << "m_value_array[" << value_index << "] = "<< m_value_array[value_index] << std::endl;
 #endif
             value_index++;
         }
     }
 
-    //    vtkDataArray* cell_data_array = NULL;
-    //    double* cell_components = NULL;
-    //    for(int i = 0; i < m_npoint_data_arrays; i++ )
-    //    {
-    //        cell_data_array = m_cell_data->GetArray(i);
-    //        for(int j = 0; j < m_ncell_data_tuples; j++)
-    //        {
-    //            cell_components = cell_data_array->GetTuple(j);
-    //            m_value_array[j] = cell_components[0];
-    //            std::cout << m_value_array[j] << std::endl;
-    //        }
-    //    }
 }
 
 void VTKFormat::setConnectionArray()
-{
-    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+{    
     int new_id;
     m_cell_type;
     vtkNew<vtkIdList> included_points;
@@ -109,6 +94,7 @@ void VTKFormat::setConnectionArray()
             int id1= element->GetPointId(j);
             new_id = 1 + included_points->InsertNextId(id1);
             m_connection_array[ connection_index ] = id1;
+
 #ifdef VALUE_DEBUG
             std::cout << "m_connection_array[" << connection_index << "] = "<< m_connection_array[j] << std::endl;
 #endif
@@ -116,7 +102,6 @@ void VTKFormat::setConnectionArray()
         }
     }
 }
-
 
 void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
 {
@@ -140,8 +125,6 @@ void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
     c2p->SetInputData(reader->GetUnstructuredGridOutput());
     c2p->Update();
 
-//    std::cout << *c2p->GetOutput()->GetPointData() << std::endl;
-
     m_output                          = reader->GetUnstructuredGridOutput();
     m_nfield_data_in_file             = reader->GetNumberOfFieldDataInFile();
     m_nscalars_in_file                = reader->GetNumberOfScalarsInFile();
@@ -159,7 +142,6 @@ void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
     m_npoints                         = c2p->GetOutput()->GetCell( 0 )->GetNumberOfPoints();
     m_coord_array.allocate(m_nnodes * 3);
     m_value_array.allocate(m_nnodes * m_nkinds);
-//    m_value_array.allocate(m_nnodes * m_nkinds);
     m_connection_array.allocate(m_nelements * m_npoints);
 
 #ifdef VALUE_DEBUG
