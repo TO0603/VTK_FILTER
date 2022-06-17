@@ -38,6 +38,7 @@ LIBS += -L$(VTK_LIB_PATH) -lvtkCommonCore-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkzlib-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkIOCore-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkIOLegacy-9.1
+LIBS += -L$(VTK_LIB_PATH) -lvtkFiltersCore-9.1
 
 HEADERS += \
     CreatePFIFile.h \

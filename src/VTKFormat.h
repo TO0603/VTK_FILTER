@@ -13,6 +13,7 @@
 #include <vtkCell.h>
 #include <vtkDataArray.h>
 #include <vtkIdList.h>
+#include <vtkCellDataToPointData.h>
 
 #include <kvs/ValueArray>
 
