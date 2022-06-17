@@ -21,7 +21,7 @@ class VTKFormat
 
 private:
     vtkGenericDataObjectReader* m_reader;
-    vtkDataSet* m_output;
+    vtkDataSet* m_reader_output;
     int m_nfield_data_in_file;
     int m_nscalars_in_file;
     vtkPointData* m_point_data;
@@ -33,7 +33,7 @@ private:
     int m_ncell_data_components;
     int m_ncell_data_tuples;
     long long m_nnodes;
-    long long m_nelements;
+    long long m_ncells;
     int m_nkinds;
     int m_npoints;
     int m_cell_type;
@@ -46,13 +46,13 @@ public:
     void read(std::string input_vtk_file);
     void generate();
     long long getNumberOfNodes() { return m_nnodes; }
-    long long getNumberOfElements() { return m_nelements; }
+    long long getNumberOfElements() { return m_ncells; }
     int getNumberOfKinds() { return m_nkinds; }
     int getNumberOfPoints() { return m_npoints; }
     int getCellType() { return m_cell_type; }
 
     void setNumberOfNodes(long long nnodes) { m_nnodes = nnodes; }
-    void setNumberOfElements(long long nelements) { m_nelements = nelements; }
+    void setNumberOfElements(long long nelements) { m_ncells = nelements; }
     void setNumberOfKinds(int nkinds) { m_nkinds = nkinds; }
     void setNumberOfPoints(int npoints) {  m_npoints = npoints; }
     void setCellType(int cell_type) {  m_cell_type = cell_type; }

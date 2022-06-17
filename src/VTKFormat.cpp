@@ -1,7 +1,7 @@
 #include "VTKFormat.h"
 
 VTKFormat::VTKFormat():
-    m_output( nullptr ),
+    m_reader_output( nullptr ),
     m_nfield_data_in_file( 0 ),
     m_nscalars_in_file( 0 ),
     m_point_data( nullptr ),
@@ -13,7 +13,7 @@ VTKFormat::VTKFormat():
     m_ncell_data_components( 0 ),
     m_ncell_data_tuples( 0 ),
     m_nnodes( 0 ),
-    m_nelements( 0 ),
+    m_ncells( 0 ),
     m_nkinds( 0 ),
     m_npoints( 0 ),
     m_cell_type(0)
@@ -43,7 +43,7 @@ void VTKFormat::setCoordArray()
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     for( int i = 0; i < m_nnodes; i++ )
     {
-        double* point = m_output->GetPoint(i);
+        double* point = m_reader_output->GetPoint(i);
         m_coord_array[i * 3] = point[0];
         m_coord_array[i * 3 + 1] = point[1];
         m_coord_array[i * 3 + 2] = point[2];
@@ -84,9 +84,9 @@ void VTKFormat::setConnectionArray()
     m_cell_type;
     vtkNew<vtkIdList> included_points;
     int connection_index = 0;
-    for(int i = 0; i < m_nelements; i++)
+    for(int i = 0; i < m_ncells; i++)
     {
-        vtkCell* element = m_output->GetCell(i);
+        vtkCell* element = m_reader_output->GetCell(i);
         m_cell_type = element->GetCellType();
         int n_points = element->GetNumberOfPoints();
         for(int j = 0; j < n_points; j++)
@@ -125,7 +125,7 @@ void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
     cell_to_point->SetInputData(reader->GetUnstructuredGridOutput());
     cell_to_point->Update();
 
-    m_output                          = reader->GetUnstructuredGridOutput();
+    m_reader_output                          = reader->GetUnstructuredGridOutput();
     m_nfield_data_in_file             = reader->GetNumberOfFieldDataInFile();
     m_nscalars_in_file                = reader->GetNumberOfScalarsInFile();
     m_point_data                      = cell_to_point->GetOutput()->GetPointData();
@@ -137,12 +137,12 @@ void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
     m_ncell_data_components           = m_cell_data->GetNumberOfComponents();
     m_ncell_data_tuples               = m_cell_data->GetNumberOfTuples();
     m_nnodes                          = cell_to_point->GetOutput()->GetNumberOfPoints();
-    m_nelements                       = cell_to_point->GetOutput()->GetNumberOfCells();
+    m_ncells                          = cell_to_point->GetOutput()->GetNumberOfCells();
     m_nkinds                          = m_nscalars_in_file;
     m_npoints                         = cell_to_point->GetOutput()->GetCell( 0 )->GetNumberOfPoints();
     m_coord_array.allocate(m_nnodes * 3);
     m_value_array.allocate(m_nnodes * m_nkinds);
-    m_connection_array.allocate(m_nelements * m_npoints);
+    m_connection_array.allocate(m_ncells * m_npoints);
 
 #ifdef VALUE_DEBUG
     std::cout << "m_nfield_data_in_file    = " << m_nfield_data_in_file    << std::endl;
