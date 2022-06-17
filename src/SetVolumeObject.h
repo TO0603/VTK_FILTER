@@ -2,7 +2,7 @@
 #define CREATEVOLUMEOBJECT_H
 
 #include <kvs/UnstructuredVolumeObject>
-#include <VTKFormat.h>
+#include "VTKFormat.h"
 class SetVolumeObject : public kvs::UnstructuredVolumeObject
 {
 private:

@@ -15,6 +15,11 @@
 #include <vtkIdList.h>
 #include <vtkCellDataToPointData.h>
 
+#include <vtkGenericEnSightReader.h>
+#include <vtkEnSightGoldBinaryReader.h>  
+#include <vtkAppendFilter.h>
+#include <vtkMultiBlockDataSet.h>
+
 #include <kvs/ValueArray>
 
 class VTKFormat
@@ -22,7 +27,8 @@ class VTKFormat
 
 private:
 //    vtkNew<vtkGenericDataObjectReader>* m_reader;
-    vtkGenericDataObjectReader* m_reader;
+    //vtkGenericDataObjectReader* m_reader;
+    vtkUnstructuredGrid* m_reader;
     vtkDataSet* m_output;
     int m_nfield_data_in_file;
     int m_nscalars_in_file;
@@ -42,7 +48,6 @@ private:
     kvs::ValueArray<kvs::Real32> m_coord_array;//m_coords
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
-
 
 public:
     VTKFormat();
@@ -68,8 +73,10 @@ public:
     void setConnectionArray();
 
 private:
-    void check_vtk_data_set_type(vtkGenericDataObjectReader* reader);
-    void read_vtk_file_parameter(vtkGenericDataObjectReader* reader);
+    //void check_vtk_data_set_type(vtkGenericDataObjectReader* reader);
+    //void read_vtk_file_parameter(vtkGenericDataObjectReader* reader);
+    void check_vtk_data_set_type(vtkUnstructuredGrid* reader);
+    void read_vtk_file_parameter(vtkUnstructuredGrid* reader);
 };
 
 #endif // FILTERVTK_H

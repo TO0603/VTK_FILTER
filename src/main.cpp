@@ -1,9 +1,9 @@
 #include <string>
 #include <iostream>
 
-#include <VTKFormat.h>
-#include <CreatePFIFile.h>
-#include <SetVolumeObject.h>
+#include "VTKFormat.h"
+#include "CreatePFIFile.h"
+#include "SetVolumeObject.h"
 int main(int argc, char* argv[])
 {
     //コマンドライン引数に何か入力されているかを判別
