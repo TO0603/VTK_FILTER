@@ -113,11 +113,11 @@ void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
     if(reader->IsFileUnstructuredGrid())
     {
         std::cout << "VTK DATASET TYPE IS UnstructuredGrid" << std::endl;
-        read_vtk_file_parameter(reader);
+        vtk_file_parameter(reader);
     }
 }
 
-void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
+void VTKFormat::vtk_file_parameter(vtkGenericDataObjectReader *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     vtkSmartPointer<vtkCellDataToPointData> cell_to_point = vtkSmartPointer<vtkCellDataToPointData>::New();
@@ -125,7 +125,7 @@ void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
     cell_to_point->SetInputData(reader->GetUnstructuredGridOutput());
     cell_to_point->Update();
 
-    m_reader_output                          = reader->GetUnstructuredGridOutput();
+    m_reader_output                   = reader->GetUnstructuredGridOutput();
     m_nfield_data_in_file             = reader->GetNumberOfFieldDataInFile();
     m_nscalars_in_file                = reader->GetNumberOfScalarsInFile();
     m_point_data                      = cell_to_point->GetOutput()->GetPointData();
