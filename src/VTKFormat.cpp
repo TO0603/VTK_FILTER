@@ -62,17 +62,19 @@ void VTKFormat::setValueArray()
 #endif
     vtkDataArray* point_data_array = NULL;
     double* point_components = NULL;
+    int value_index = 0;
     for(int i = 0; i < m_npoint_data_arrays; i++ )
     {
         point_data_array = m_point_data->GetArray(i);
         for(int j = 0; j < m_npoint_data_tuples; j++)
         {
             point_components = point_data_array->GetTuple(j);
-            m_value_array[j] = point_components[0];
+            m_value_array[value_index] = point_components[0];
 #ifdef VALUE_DEBUG
             //            std::cout << "[" << j << "]" << m_value_array[j] << std::endl;
-            std::cout << "m_value_array[" << j << "] = "<< m_value_array[j] << std::endl;
+            std::cout << "m_value_array[" << value_index << "] = "<< m_value_array[value_index] << std::endl;
 #endif
+            value_index++;
         }
     }
 
@@ -133,23 +135,31 @@ void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
 void VTKFormat::read_vtk_file_parameter(vtkGenericDataObjectReader *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    vtkSmartPointer<vtkCellDataToPointData> c2p = vtkSmartPointer<vtkCellDataToPointData>::New();
+    c2p->SetProcessAllArrays(true);
+    c2p->SetInputData(reader->GetUnstructuredGridOutput());
+    c2p->Update();
+
+//    std::cout << *c2p->GetOutput()->GetPointData() << std::endl;
+
     m_output                          = reader->GetUnstructuredGridOutput();
     m_nfield_data_in_file             = reader->GetNumberOfFieldDataInFile();
     m_nscalars_in_file                = reader->GetNumberOfScalarsInFile();
-    m_point_data                      = m_output->GetPointData();
-    m_cell_data                       = m_output->GetCellData();
+    m_point_data                      = c2p->GetOutput()->GetPointData();
+    m_cell_data                       = c2p->GetOutput()->GetCellData();
     m_npoint_data_arrays              = m_point_data->GetNumberOfArrays();
     m_npoint_data_components          = m_point_data->GetNumberOfComponents();
     m_npoint_data_tuples              = m_point_data->GetNumberOfTuples();
     m_ncell_data_arrays               = m_cell_data->GetNumberOfArrays();
     m_ncell_data_components           = m_cell_data->GetNumberOfComponents();
     m_ncell_data_tuples               = m_cell_data->GetNumberOfTuples();
-    m_nnodes                          = m_output->GetNumberOfPoints();
-    m_nelements                       = m_output->GetNumberOfCells();
+    m_nnodes                          = c2p->GetOutput()->GetNumberOfPoints();
+    m_nelements                       = c2p->GetOutput()->GetNumberOfCells();
     m_nkinds                          = m_nscalars_in_file;
-    m_npoints                         = m_output->GetCell( 0 )->GetNumberOfPoints();
+    m_npoints                         = c2p->GetOutput()->GetCell( 0 )->GetNumberOfPoints();
     m_coord_array.allocate(m_nnodes * 3);
     m_value_array.allocate(m_nnodes * m_nkinds);
+//    m_value_array.allocate(m_nnodes * m_nkinds);
     m_connection_array.allocate(m_nelements * m_npoints);
 
 #ifdef VALUE_DEBUG
