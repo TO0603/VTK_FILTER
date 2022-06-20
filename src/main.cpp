@@ -34,6 +34,6 @@ int main(int argc, char* argv[])
     kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
     kvsml->write(kvsml_filename);
 
-    std::cout << "EXIT" << std::endl;
+    std::cout << "[EXIT]" << std::endl;
     return EXIT_SUCCESS;
 }

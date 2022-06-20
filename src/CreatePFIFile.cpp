@@ -1,24 +1,10 @@
 #include "CreatePFIFile.h"
 
 CreatePFIFile::CreatePFIFile(std::string fileName, VTKFormat filterVTK):
-    m_nnodes(filterVTK.getNumberOfNodes()),
-    m_ncells(filterVTK.getNumberOfCells()),
-    m_nveclen(filterVTK.getNumberOfKinds()),
-    m_coord_array(filterVTK.getCoordArray()),
-    m_value_array(filterVTK.getValuewArray()),
-    m_connection_array(filterVTK.getConnectionArray()),
-    m_cell_type(filterVTK.getCellType()),
+    m_vtk_format(filterVTK),
     m_file_name(fileName)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-#ifdef VALUE_DEBUG
-    std::cout << "m_nnodes                  = " << m_nnodes                  << std::endl;
-    std::cout << "m_ncells                  = " << m_ncells                  << std::endl;
-    std::cout << "m_nveclen                 = " << m_nveclen                 << std::endl;
-    std::cout << "m_coord_array.size()      = " << m_coord_array.size()      << std::endl;
-    std::cout << "m_value_array.size()      = " << m_value_array.size()      << std::endl;
-    std::cout << "m_connection_array.size() = " << m_connection_array.size() << std::endl;
-#endif
 }
 
 int CreatePFIFile::get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType)
@@ -56,19 +42,16 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     std::string pfiFileName = "./out/" + m_file_name + ".pfi";
 
 #ifdef VALUE_DEBUG
-    std::cout << "m_nnodes                 = " << m_nnodes                  << std::endl;
-    std::cout << "m_ncells                 = " << m_ncells                  << std::endl;
-    std::cout << "m_nveclen                = " << m_nveclen                 << std::endl;
     std::cout << "volume->minObjectCoord() = " << volume->minObjectCoord()  << std::endl;
     std::cout << "volume->maxObjectCoord() = " << volume->maxObjectCoord()  << std::endl;
 #endif
 
     pfi = fopen(pfiFileName.c_str(), "wb");
     //頂点数
-    itmp = m_nnodes;
+    itmp = m_vtk_format.getNumberOfNodes();
     fwrite(&itmp, 4, 1, pfi);
     //要素数
-    itmp = m_ncells;
+    itmp = m_vtk_format.getNumberOfCells();
     fwrite(&itmp, 4, 1, pfi);
     //要素タイプ
     itmp = get_pfi_unstructured_cell_type(volume->cellType());
@@ -80,7 +63,7 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     itmp = 0;
     fwrite(&itmp, 4, 1, pfi);
     //成分数(ベクトル?)
-    itmp = m_nveclen;
+    itmp = m_vtk_format.getNumberOfKinds();
     fwrite(&itmp, 4, 1, pfi);
     //開始ステップ
     itmp = 0;
@@ -100,10 +83,10 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     ftmp[5] = volume->maxObjectCoord().z();
     fwrite(&ftmp, 4, 6, pfi);
     //サブボリュームの頂点数
-    itmp = m_nnodes;
+    itmp = m_vtk_format.getNumberOfNodes();
     fwrite(&itmp, 4, 1, pfi);
     //サブボリュームの要素数
-    itmp = m_ncells;
+    itmp = m_vtk_format.getNumberOfCells();
     fwrite(&itmp, 4, 1, pfi);
     //サブボリュームの座標の最大最小値
     fwrite(&ftmp, 4, 6, pfi);

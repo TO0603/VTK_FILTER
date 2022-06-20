@@ -1,24 +1,9 @@
 #include "SetVolumeObject.h"
 
 SetVolumeObject::SetVolumeObject(VTKFormat vtk_parameter_reader):
-    m_nnodes(vtk_parameter_reader.getNumberOfNodes()),
-    m_ncells(vtk_parameter_reader.getNumberOfCells()),
-    m_nveclen(vtk_parameter_reader.getNumberOfKinds()),
-    m_coord_array(vtk_parameter_reader.getCoordArray()),
-    m_value_array(vtk_parameter_reader.getValuewArray()),
-    m_connection_array(vtk_parameter_reader.getConnectionArray()),
-    m_vtk_cell_type(vtk_parameter_reader.getCellType())
+    m_vtk_format(vtk_parameter_reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-#ifdef VALUE_DEBUG
-    std::cout << "m_nnodes           = " << m_nnodes           << std::endl;
-    std::cout << "m_ncells           = " << m_ncells           << std::endl;
-    std::cout << "m_nveclen          = " << m_nveclen          << std::endl;
-    std::cout << "m_coord_array      = " << m_coord_array      << std::endl;
-    std::cout << "m_value_array      = " << m_value_array      << std::endl;
-    std::cout << "m_connection_array = " << m_connection_array << std::endl;
-    std::cout << "m_vtk_cell_type    = " << m_vtk_cell_type    << std::endl;
-#endif
     create_unstructured_volume_object();
 }
 
@@ -62,13 +47,13 @@ kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_objec
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();
-    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type(m_vtk_cell_type));
-    this->setVeclen( m_nveclen );
-    this->setNumberOfNodes( m_nnodes );
-    this->setNumberOfCells( m_ncells );
-    this->setCoords( m_coord_array );
-    this->setConnections( m_connection_array );
-    this->setValues( m_value_array );
+    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type(m_vtk_format.getCellType()));
+    this->setVeclen( m_vtk_format.getNumberOfKinds() );
+    this->setNumberOfNodes( m_vtk_format.getNumberOfNodes() );
+    this->setNumberOfCells( m_vtk_format.getNumberOfCells() );
+    this->setCoords( m_vtk_format.getCoordArray() );
+    this->setConnections( m_vtk_format.getConnectionArray() );
+    this->setValues( m_vtk_format.getValuewArray() );
     this->updateMinMaxCoords();
     this->updateMinMaxValues();
     this->updateNormalizeParameters();

@@ -108,11 +108,11 @@ void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     if(reader->IsFilePolyData())
     {
-        std::cout << "not implemented!" << std::endl;
+        std::cout << "[not implemented!]" << std::endl;
     }
     if(reader->IsFileUnstructuredGrid())
     {
-        std::cout << "VTK DATASET TYPE IS UnstructuredGrid" << std::endl;
+        std::cout << "[VTK DATASET TYPE IS UnstructuredGrid]" << std::endl;
         vtk_file_parameter(reader);
     }
 }
@@ -156,7 +156,7 @@ void VTKFormat::vtk_file_parameter(vtkGenericDataObjectReader *reader)
     std::cout << "m_ncell_data_components  = " << m_ncell_data_components  << std::endl;
     std::cout << "m_ncell_data_tuples      = " << m_ncell_data_tuples      << std::endl;
     std::cout << "m_nnodes                 = " << m_nnodes                 << std::endl;
-    std::cout << "m_nelements              = " << m_nelements              << std::endl;
+    std::cout << "m_ncells              = " << m_ncells              << std::endl;
     std::cout << "m_nkinds                 = " << m_nkinds                 << std::endl;
     std::cout << "m_npoints                = " << m_npoints                << std::endl;
 #endif
