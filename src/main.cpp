@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
     std::string kvsml_filename = createPFI->KVSMLFileName();
 
     kvs::UnstructuredVolumeObject* volume = new SetVolumeObject(*vtk);
+    std::cout << *volume << std::endl;
     createPFI->createPFIFile(volume);
 
     kvs::KVSMLUnstructuredVolumeObject* kvsml =
@@ -34,6 +35,10 @@ int main(int argc, char* argv[])
     kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
     kvsml->write(kvsml_filename);
 
+    delete vtk;
+    delete createPFI;
+    delete volume;
+    delete kvsml;
     std::cout << "[EXIT]" << std::endl;
     return EXIT_SUCCESS;
 }
