@@ -1,16 +1,16 @@
 #include "CreatePFIFile.h"
 
-CreatePFIFile::CreatePFIFile(std::string fileName, VTKFormat filterVTK):
-    m_vtk_format(filterVTK),
-    m_file_name(fileName)
+CreatePFIFile::CreatePFIFile( std::string fileName, VTKFormat vtkFormat ):
+    m_vtk_format( vtkFormat ),
+    m_file_name( fileName )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 }
 
-int CreatePFIFile::get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType)
+int CreatePFIFile::get_pfi_unstructured_cell_type( kvs::UnstructuredVolumeObject::CellType kvs_cellType )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    switch(kvs_cellType)
+    switch( kvs_cellType )
     {
     case kvs::UnstructuredVolumeObject::UnknownCellType:
         return 0;
@@ -33,7 +33,7 @@ int CreatePFIFile::get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject:
     }
 }
 
-void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
+void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     FILE *pfi = NULL;

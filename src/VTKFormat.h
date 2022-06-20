@@ -44,7 +44,7 @@ private:
 
 public:
     VTKFormat();
-    void read(std::string input_vtk_file);
+    void read( std::string input_vtk_file );
     void generate();
 
     int getNumberOfFieldDataInFile() { return m_nfield_data_in_file; }
@@ -82,8 +82,8 @@ public:
     void setConnectionArray();
 
 private:
-    void check_vtk_data_set_type(vtkGenericDataObjectReader* reader);
-    void vtk_file_parameter(vtkGenericDataObjectReader* reader); //
+    void check_vtk_data_set_type( vtkGenericDataObjectReader* reader );
+    void vtk_file_parameter( vtkGenericDataObjectReader* reader ); //
 };
 
 #endif // FILTERVTK_H

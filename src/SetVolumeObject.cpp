@@ -1,18 +1,18 @@
 #include "SetVolumeObject.h"
 
-SetVolumeObject::SetVolumeObject(VTKFormat vtk_parameter_reader):
-    m_vtk_format(vtk_parameter_reader)
+SetVolumeObject::SetVolumeObject( VTKFormat vtkFormat ):
+    m_vtk_format( vtkFormat )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     create_unstructured_volume_object();
 }
 
-kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_to_kvs_cell_type(int vtk_cellType)
+kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_to_kvs_cell_type( int vtk_cellType )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     VTKCellType vtkCellType;
-    vtkCellType = static_cast<VTKCellType>(vtk_cellType);
-    switch(vtkCellType)
+    vtkCellType = static_cast<VTKCellType>( vtk_cellType );
+    switch( vtkCellType )
     {
     case VTK_EMPTY_CELL:
         return kvs::UnstructuredVolumeObject::UnknownCellType;
@@ -47,7 +47,7 @@ kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_objec
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();
-    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type(m_vtk_format.getCellType()));
+    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type( m_vtk_format.getCellType() ) );
     this->setVeclen( m_vtk_format.getNumberOfKinds() );
     this->setNumberOfNodes( m_vtk_format.getNumberOfNodes() );
     this->setNumberOfCells( m_vtk_format.getNumberOfCells() );

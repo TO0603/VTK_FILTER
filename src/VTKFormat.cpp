@@ -16,17 +16,17 @@ VTKFormat::VTKFormat():
     m_ncells( 0 ),
     m_nkinds( 0 ),
     m_npoints( 0 ),
-    m_cell_type(0)
+    m_cell_type( 0 )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 }
 
-void VTKFormat::read(std::string input_vtk_file)
+void VTKFormat::read( std::string input_vtk_file )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     vtkSmartPointer<vtkGenericDataObjectReader> reader = vtkGenericDataObjectReader::New();
 
-    reader->SetFileName(input_vtk_file.c_str());
+    reader->SetFileName( input_vtk_file.c_str() );
     reader->Update();
 
     m_reader = reader;
@@ -35,7 +35,7 @@ void VTKFormat::read(std::string input_vtk_file)
 void VTKFormat::generate()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    check_vtk_data_set_type(m_reader);
+    check_vtk_data_set_type( m_reader );
 }
 
 void VTKFormat::setCoordArray()
@@ -43,7 +43,7 @@ void VTKFormat::setCoordArray()
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     for( int i = 0; i < m_nnodes; i++ )
     {
-        double* point = m_reader_output->GetPoint(i);
+        double* point = m_reader_output->GetPoint( i );
         m_coord_array[i * 3] = point[0];
         m_coord_array[i * 3 + 1] = point[1];
         m_coord_array[i * 3 + 2] = point[2];
@@ -57,17 +57,17 @@ void VTKFormat::setValueArray()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 #ifdef VALUE_DEBUG
-    std::cout << "m_value_array(points)" << std::endl;
+    std::cout << "m_value_array( points )" << std::endl;
 #endif
     vtkDataArray* point_data_array = NULL;
     double* point_components = NULL;
     int value_index = 0;
-    for(int i = 0; i < m_npoint_data_arrays; i++ )
+    for( int i = 0; i < m_npoint_data_arrays; i++ )
     {
-        point_data_array = m_point_data->GetArray(i);
-        for(int j = 0; j < m_npoint_data_tuples; j++)
+        point_data_array = m_point_data->GetArray( i );
+        for( int j = 0; j < m_npoint_data_tuples; j++ )
         {
-            point_components = point_data_array->GetTuple(j);
+            point_components = point_data_array->GetTuple( j );
             m_value_array[value_index] = point_components[0];
 #ifdef VALUE_DEBUG            
             std::cout << "m_value_array[" << value_index << "] = "<< m_value_array[value_index] << std::endl;
@@ -84,15 +84,15 @@ void VTKFormat::setConnectionArray()
     m_cell_type;
     vtkNew<vtkIdList> included_points;
     int connection_index = 0;
-    for(int i = 0; i < m_ncells; i++)
+    for( int i = 0; i < m_ncells; i++ )
     {
-        vtkCell* element = m_reader_output->GetCell(i);
+        vtkCell* element = m_reader_output->GetCell( i );
         m_cell_type = element->GetCellType();
         int n_points = element->GetNumberOfPoints();
-        for(int j = 0; j < n_points; j++)
+        for( int j = 0; j < n_points; j++ )
         {
-            int id1= element->GetPointId(j);
-            new_id = 1 + included_points->InsertNextId(id1);
+            int id1= element->GetPointId( j );
+            new_id = 1 + included_points->InsertNextId( id1 );
             m_connection_array[ connection_index ] = id1;
 
 #ifdef VALUE_DEBUG
@@ -103,26 +103,26 @@ void VTKFormat::setConnectionArray()
     }
 }
 
-void VTKFormat::check_vtk_data_set_type(vtkGenericDataObjectReader *reader)
+void VTKFormat::check_vtk_data_set_type( vtkGenericDataObjectReader *reader )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    if(reader->IsFilePolyData())
+    if( reader->IsFilePolyData() )
     {
         std::cout << "[not implemented!]" << std::endl;
     }
-    if(reader->IsFileUnstructuredGrid())
+    if( reader->IsFileUnstructuredGrid() )
     {
         std::cout << "[VTK DATASET TYPE IS UnstructuredGrid]" << std::endl;
-        vtk_file_parameter(reader);
+        vtk_file_parameter( reader );
     }
 }
 
-void VTKFormat::vtk_file_parameter(vtkGenericDataObjectReader *reader)
+void VTKFormat::vtk_file_parameter( vtkGenericDataObjectReader *reader )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     vtkSmartPointer<vtkCellDataToPointData> cell_to_point = vtkSmartPointer<vtkCellDataToPointData>::New();
-    cell_to_point->SetProcessAllArrays(true);
-    cell_to_point->SetInputData(reader->GetUnstructuredGridOutput());
+    cell_to_point->SetProcessAllArrays( true );
+    cell_to_point->SetInputData( reader->GetUnstructuredGridOutput() );
     cell_to_point->Update();
 
     m_reader_output                   = reader->GetUnstructuredGridOutput();
@@ -140,9 +140,9 @@ void VTKFormat::vtk_file_parameter(vtkGenericDataObjectReader *reader)
     m_ncells                          = cell_to_point->GetOutput()->GetNumberOfCells();
     m_nkinds                          = m_nscalars_in_file;
     m_npoints                         = cell_to_point->GetOutput()->GetCell( 0 )->GetNumberOfPoints();
-    m_coord_array.allocate(m_nnodes * 3);
-    m_value_array.allocate(m_nnodes * m_nkinds);
-    m_connection_array.allocate(m_ncells * m_npoints);
+    m_coord_array.allocate( m_nnodes * 3 );
+    m_value_array.allocate( m_nnodes * m_nkinds );
+    m_connection_array.allocate( m_ncells * m_npoints );
 
 #ifdef VALUE_DEBUG
     std::cout << "m_nfield_data_in_file    = " << m_nfield_data_in_file    << std::endl;
