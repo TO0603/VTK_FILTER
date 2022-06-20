@@ -3,7 +3,7 @@
 #include <kvs/UnstructuredVolumeObject>
 #include <kvs/UnstructuredVolumeExporter>
 #include <kvs/KVSMLUnstructuredVolumeObject>
-#include "VTKFormat.h"
+#include "EnsightFormat.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +23,7 @@ private:
     int m_cell_type;
     std::string m_file_name;
 public:
-    CreatePFIFile(std::string fileName,VTKFormat vtk_parameter_reader);
+    CreatePFIFile(std::string fileName,EnsightFormat vtk_parameter_reader);
     std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_0000001.kvsml"; }
     void setFileName(std::string file_name) { m_file_name = file_name; } //?
     void createPFIFile(kvs::UnstructuredVolumeObject*);

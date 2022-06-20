@@ -1,6 +1,6 @@
 #include "CreatePFIFile.h"
 
-CreatePFIFile::CreatePFIFile(std::string fileName, VTKFormat filterVTK):
+CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterVTK):
     m_nnodes(filterVTK.getNumberOfNodes()),
     m_ncells(filterVTK.getNumberOfElements()),
     m_nveclen(filterVTK.getNumberOfKinds()),

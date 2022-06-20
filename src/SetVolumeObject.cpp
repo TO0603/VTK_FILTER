@@ -1,6 +1,6 @@
 #include "SetVolumeObject.h"
 
-SetVolumeObject::SetVolumeObject(VTKFormat vtk_parameter_reader):
+SetVolumeObject::SetVolumeObject(EnsightFormat vtk_parameter_reader):
     m_nnodes(vtk_parameter_reader.getNumberOfNodes()),
     m_ncells(vtk_parameter_reader.getNumberOfElements()),
     m_nveclen(vtk_parameter_reader.getNumberOfKinds()),
