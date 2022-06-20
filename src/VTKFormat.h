@@ -83,7 +83,7 @@ public:
 
 private:
     void check_vtk_data_set_type(vtkGenericDataObjectReader* reader);
-    void vtk_file_parameter(vtkGenericDataObjectReader* reader);
+    void vtk_file_parameter(vtkGenericDataObjectReader* reader); //
 };
 
 #endif // FILTERVTK_H
