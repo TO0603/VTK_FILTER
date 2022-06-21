@@ -46,12 +46,14 @@ private:
     int m_nkinds;
     int m_npoints;
     int m_cell_type;
+    int m_block_number;
     kvs::ValueArray<kvs::Real32> m_coord_array;//m_coords
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
 
 public:
     EnsightFormat();
+    void setNumberOfBlock(std::string input_vtk_file);
     void read(std::string input_vtk_file);
     void generate();
     long long getNumberOfNodes() { return m_nnodes; }
@@ -59,6 +61,7 @@ public:
     int getNumberOfKinds() { return m_nkinds; }
     int getNumberOfPoints() { return m_npoints; }
     int getCellType() { return m_cell_type; }
+    int getBlockNumber() { return m_block_number; }
 
     void setNumberOfNodes(long long nnodes) { m_nnodes = nnodes; }
     void setNumberOfElements(long long nelements) { m_nelements = nelements; }

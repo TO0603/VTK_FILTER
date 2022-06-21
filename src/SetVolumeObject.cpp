@@ -19,6 +19,7 @@ SetVolumeObject::SetVolumeObject(EnsightFormat vtk_parameter_reader):
     std::cout << "m_connection_array = " << m_connection_array << std::endl;
     std::cout << "m_vtk_cell_type    = " << m_vtk_cell_type    << std::endl;
 #endif
+    std::cout << "m_vtk_cell_type    = " << m_vtk_cell_type    << std::endl;
     create_unstructured_volume_object();
 }
 

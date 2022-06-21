@@ -16,11 +16,26 @@ EnsightFormat::EnsightFormat():
     m_nelements( 0 ),
     m_nkinds( 0 ),
     m_npoints( 0 ),
-    m_cell_type(0)
+    m_cell_type(0),
+    m_block_number(0)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 }
 
+void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
+{
+    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    vtkSmartPointer<vtkEnSightGoldBinaryReader> reader = vtkEnSightGoldBinaryReader::New();
+
+    reader->SetCaseFileName(input_vtk_file.c_str());
+    reader->ReadAllVariablesOn(); 
+    reader->Update();
+    vtkMultiBlockDataSet*  output = reader->GetOutput(); 
+    m_block_number =  output->GetNumberOfBlocks(); 
+    std::cout << "num_blocks = " << m_block_number << std::endl; 
+}
+
+//void EnsightFormat::read(std::string input_vtk_file, const int i)
 void EnsightFormat::read(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
@@ -30,6 +45,23 @@ void EnsightFormat::read(std::string input_vtk_file)
     reader->ReadAllVariablesOn(); 
     reader->Update();
     vtkMultiBlockDataSet*  output = reader->GetOutput(); 
+    //m_block_number =  output->GetNumberOfBlocks(); 
+    //std::cout << "num_blocks = " << m_block_number << std::endl; 
+
+    //vtkDataObject* block[m_block_number];
+    //vtkUnstructuredGrid* block[num_blocks];
+    //vtkUnstructuredGridAlgorithm* block[num_blocks];
+    //for (int i = 0; i < m_block_number; i ++)
+    //{
+    //block[i] = output->GetBlock(i);
+    //}
+
+    //vtkNew<vtkAppendFilter> append;   
+
+    //for (int i = 0; i < m_block_number; i ++)
+    //{
+    //append->AddInputData(block[i]);
+    //}
     vtkDataObject* block = output->GetBlock(0);
     vtkNew<vtkAppendFilter> append;   
     append->AddInputData(block);
@@ -39,7 +71,6 @@ void EnsightFormat::read(std::string input_vtk_file)
     unstructuredGrid->ShallowCopy(append->GetOutput());       
     m_reader = unstructuredGrid;
 
-    //m_reader ->ShallowCopy(append->GetOutput());
 }
 
 void EnsightFormat::generate()
@@ -112,6 +143,10 @@ void EnsightFormat::setConnectionArray()
     {
         vtkCell* element = m_reader->GetCell(i);
         m_cell_type = element->GetCellType();
+        if (i % 100 ==0)
+        {
+        std::cout << "m_cell_type = " << m_cell_type << std::endl;
+        }
         int n_points = element->GetNumberOfPoints();
         for(int j = 0; j < n_points; j++)
         {
