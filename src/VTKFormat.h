@@ -41,6 +41,9 @@ private:
     kvs::ValueArray<kvs::Real32> m_coord_array;
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
+    kvs::ValueArray<float> m_min;
+    kvs::ValueArray<float> m_max;
+
 
 public:
     VTKFormat();
@@ -63,6 +66,8 @@ public:
     kvs::ValueArray<kvs::Real32> getCoordArray() { return m_coord_array; }
     kvs::ValueArray<kvs::Real32> getValuewArray() { return m_value_array; }
     kvs::ValueArray<kvs::UInt32> getConnectionArray() { return m_connection_array; }
+    kvs::ValueArray<float> getMin() { return m_min; }
+    kvs::ValueArray<float> getMax() { return m_max; }
 
     void setNumberOfFieldDataInFile( int nfield_data_in_file ) { m_nfield_data_in_file = nfield_data_in_file; }
     void setNumberOfScalarsDataInFile (int nscalars_in_file ) { m_nscalars_in_file = nscalars_in_file; }
@@ -80,7 +85,8 @@ public:
     void setCoordArray();
     void setValueArray();
     void setConnectionArray();
-
+//    void setMin(float min) { m_min = min; }
+//    void setMax(float max) { m_max = max; }
 private:
     void check_vtk_data_set_type( vtkGenericDataObjectReader* reader );
     void vtk_file_parameter( vtkGenericDataObjectReader* reader ); //

@@ -39,6 +39,7 @@ void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
     FILE *pfi = NULL;
     int itmp;
     float ftmp[6];
+    float oftmp;
     std::string pfiFileName = "./out/" + m_file_name + ".pfi";
 
 #ifdef VALUE_DEBUG
@@ -60,7 +61,7 @@ void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
     itmp = 0;
     fwrite(&itmp, 4, 1, pfi);
     //ファイル数
-    itmp = 0;
+    itmp = 1;//
     fwrite(&itmp, 4, 1, pfi);
     //成分数(ベクトル?)
     itmp = m_vtk_format.getNumberOfKinds();
@@ -90,11 +91,17 @@ void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
     fwrite(&itmp, 4, 1, pfi);
     //サブボリュームの座標の最大最小値
     fwrite(&ftmp, 4, 6, pfi);
-    //ステップ1の成分最小値
-    itmp = 1;
-    fwrite(&itmp, 4, 1, pfi);
-    //ステップ1の成分最大値
-    itmp = 5;
-    fwrite(&itmp, 4, 1, pfi);
+
+    for(int i = 0; i < m_vtk_format.getNumberOfKinds(); i++)
+    {
+        //ステップ0の成分1最小値
+        oftmp = m_vtk_format.getMin().at(i);
+        fwrite(&oftmp, 4, 1, pfi);
+        //ステップ0の成分1最大値
+        oftmp = m_vtk_format.getMax().at(i);
+        fwrite(&oftmp, 4, 1, pfi);
+    }    
+
+    fwrite(&oftmp, 4, 1, pfi);
     fclose(pfi);
 }

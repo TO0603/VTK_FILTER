@@ -143,7 +143,8 @@ void VTKFormat::vtk_file_parameter( vtkGenericDataObjectReader *reader )
     m_coord_array.allocate( m_nnodes * 3 );
     m_value_array.allocate( m_nnodes * m_nkinds );
     m_connection_array.allocate( m_ncells * m_npoints );
-
+    m_min.allocate( m_nkinds );
+    m_max.allocate( m_nkinds );
 #ifdef VALUE_DEBUG
     std::cout << "m_nfield_data_in_file    = " << m_nfield_data_in_file    << std::endl;
     std::cout << "m_nscalars_in_file       = " << m_nscalars_in_file       << std::endl;
