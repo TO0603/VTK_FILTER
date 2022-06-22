@@ -44,7 +44,6 @@ private:
     kvs::ValueArray<float> m_min;
     kvs::ValueArray<float> m_max;
 
-
 public:
     VTKFormat();
     void read( std::string input_vtk_file );

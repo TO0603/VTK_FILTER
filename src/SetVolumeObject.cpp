@@ -54,14 +54,10 @@ kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_objec
     this->setCoords( m_vtk_format.getCoordArray() );
     this->setConnections( m_vtk_format.getConnectionArray() );
 
-//    float min[2];
-//    float max[2];
     int values_index = 0;
 
     for( int i = 0; i < m_vtk_format.getNumberOfKinds(); i++ )
     {
-//        min[i] = m_vtk_format.getValuewArray().at(i * m_vtk_format.getNumberOfNodes());
-//        max[i] = m_vtk_format.getValuewArray().at(i * m_vtk_format.getNumberOfNodes());
         m_vtk_format.getMin().at(i) = m_vtk_format.getValuewArray().at(i * m_vtk_format.getNumberOfNodes());
         m_vtk_format.getMax().at(i) = m_vtk_format.getValuewArray().at(i * m_vtk_format.getNumberOfNodes());
         for( int j = 0; j < m_vtk_format.getNumberOfNodes(); j++ )
@@ -71,8 +67,6 @@ kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_objec
             m_vtk_format.getMax().at(i) = kvs::Math::Max<float>(m_vtk_format.getMin().at(i),tmp);
             values_index++;
         }
-//        std::cout << m_vtk_format.getMin().at(i) << std::endl;
-//        std::cout << m_vtk_format.getMax().at(i) << std::endl;
     }
 
     this->setValues( m_vtk_format.getValuewArray() );

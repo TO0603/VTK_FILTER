@@ -102,6 +102,5 @@ void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
         fwrite(&oftmp, 4, 1, pfi);
     }    
 
-    fwrite(&oftmp, 4, 1, pfi);
     fclose(pfi);
 }
