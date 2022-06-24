@@ -40,8 +40,6 @@ int CreatePFIFile::get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject:
         return 5;
     case kvs::UnstructuredVolumeObject::Point:
         return 0;
-    case kvs::UnstructuredVolumeObject::Prism:
-        return 6;
     default:
         return 0;
     }
@@ -54,6 +52,7 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     int itmp;
     float ftmp[6];
     std::string pfiFileName = "./out/" + m_file_name + ".pfi";
+    //int 
 
 #ifdef VALUE_DEBUG
     std::cout << "m_nnodes                 = " << m_nnodes                  << std::endl;

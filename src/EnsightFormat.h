@@ -28,9 +28,9 @@ class EnsightFormat
 private:
 //    vtkNew<vtkGenericDataObjectReader> m_reader;
     //vtkGenericDataObjectReader* m_reader;
-    //vtkNew<vtkUnstructuredGrid> m_reader;
     vtkUnstructuredGrid* m_reader;
     vtkDataSet* m_output;
+    vtkMultiBlockDataSet* m_MultiBlockDataSet; 
     int m_nfield_data_in_file;
     int m_nscalars_in_file;
     vtkPointData* m_point_data;
@@ -54,8 +54,9 @@ private:
 public:
     EnsightFormat();
     void setNumberOfBlock(std::string input_vtk_file);
-    void read(std::string input_vtk_file);
+    void read(std::string input_vtk_file, const int i);
     void generate();
+    void show_memory();
     long long getNumberOfNodes() { return m_nnodes; }
     long long getNumberOfElements() { return m_nelements; }
     int getNumberOfKinds() { return m_nkinds; }
@@ -77,8 +78,6 @@ public:
     void setConnectionArray();
 
 private:
-    //void check_vtk_data_set_type(vtkGenericDataObjectReader* reader);
-    //void read_vtk_file_parameter(vtkGenericDataObjectReader* reader);
     void check_vtk_data_set_type(vtkUnstructuredGrid* reader);
     void read_vtk_file_parameter(vtkUnstructuredGrid* reader);
 };

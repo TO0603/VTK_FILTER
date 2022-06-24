@@ -24,6 +24,7 @@ SetVolumeObject::SetVolumeObject(EnsightFormat vtk_parameter_reader):
 }
 
 kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_to_kvs_cell_type(int vtk_cellType)
+//int  SetVolumeObject::convert_vtk_cell_type_to_kvs_cell_type(int vtk_cellType)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     VTKCellType vtkCellType;
@@ -32,32 +33,51 @@ kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_t
     {
     case VTK_EMPTY_CELL:
         return kvs::UnstructuredVolumeObject::UnknownCellType;
+        //return 0;
 
     case VTK_TETRA:
         return kvs::UnstructuredVolumeObject::Tetrahedra;
+        //return 10;
 
     case VTK_HEXAHEDRON:
         return kvs::UnstructuredVolumeObject::Hexahedra;
+        //return 12; 
 
     case VTK_QUADRATIC_TETRA:
         return kvs::UnstructuredVolumeObject::QuadraticTetrahedra;
+        //return 14; 
 
     case VTK_QUADRATIC_HEXAHEDRON:
         return kvs::UnstructuredVolumeObject::QuadraticHexahedra;
+        //return 14;
 
     case VTK_PYRAMID:
         return kvs::UnstructuredVolumeObject::Pyramid;
+        //return 14; 
 
     case VTK_VERTEX:
         return kvs::UnstructuredVolumeObject::Point;
+        //return 1;  
 
     case VTK_WEDGE:
         return kvs::UnstructuredVolumeObject::Prism;
+        //return 6;  
+
+//    case VTK_TRIANGLE:
+//        return kvs::UnstructuredVolumeObject::Triangle ;
+//        //return 5; 
 
     default:
         return kvs::UnstructuredVolumeObject::UnknownCellType;
+        //return 0;
     }
 }
+
+//int SetVolumeObject::is_triangle(int vtk_cellType)
+//{
+//
+//}
+
 
 kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_object()
 {

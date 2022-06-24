@@ -22,9 +22,12 @@ private:
     kvs::ValueArray<kvs::UInt32> m_connection_array;
     int m_cell_type;
     std::string m_file_name;
+
+
 public:
     CreatePFIFile(std::string fileName,EnsightFormat vtk_parameter_reader);
-    std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_0000001.kvsml"; }
+    //std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_" + m_block_number + ".kvsml"; }
+    std::string KVSMLFileName(const int i_block) { return "./out/" + m_file_name + "_00000_0000001_" + std::to_string(i_block) + ".kvsml"; }
     void setFileName(std::string file_name) { m_file_name = file_name; } //?
     void createPFIFile(kvs::UnstructuredVolumeObject*);
 private:

@@ -23,23 +23,25 @@ int main(int argc, char* argv[])
 
     EnsightFormat *vtk = new EnsightFormat();
     vtk->setNumberOfBlock(inputFilename);
-    //int block_number = vtk ->getBlockNumber();
-    int block_number = 1;
+    int block_number = vtk ->getBlockNumber();
+    //int block_number = 1;
         
-    for (int i = 0; i < block_number; i ++)
+    for (int i_block = 0; i_block < block_number; i_block ++)
     {
-    vtk->read(inputFilename);
+    vtk->read(inputFilename,i_block);
     vtk->generate();
 
     CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
-    std::string kvsml_filename = createPFI->KVSMLFileName();
+    std::string kvsml_filename = createPFI->KVSMLFileName(i_block);
 
     kvs::UnstructuredVolumeObject* volume = new SetVolumeObject(*vtk);
     createPFI->createPFIFile(volume);
-
+    
     kvs::KVSMLUnstructuredVolumeObject* kvsml =
             new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
+    std::cout << "kvmsl " <<std::endl;
     kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
+    std::cout << "setWritingDataType " <<std::endl;
     kvsml->write(kvsml_filename);
     }
 

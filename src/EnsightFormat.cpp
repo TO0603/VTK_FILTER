@@ -1,4 +1,6 @@
 #include "EnsightFormat.h"
+#include <sys/resource.h>
+
 
 EnsightFormat::EnsightFormat():
     m_output( nullptr ),
@@ -17,9 +19,19 @@ EnsightFormat::EnsightFormat():
     m_nkinds( 0 ),
     m_npoints( 0 ),
     m_cell_type(0),
-    m_block_number(0)
+    m_block_number(0),
+    m_MultiBlockDataSet(0)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+}
+
+void EnsightFormat::show_memory()
+{
+    // Print CPU memory info
+    struct rusage usage;
+    int getrusage_ret = getrusage(RUSAGE_SELF, &usage);
+    // runtime_assert(getrusage_ret == 0, "InternalError");
+    std::cout << "CPU mem usage: ru_maxrss = " << (double)usage.ru_maxrss/1024./1024. << " MB" << std::endl; // ru_maxrss is in unit KB
 }
 
 void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
@@ -29,24 +41,22 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
 
     reader->SetCaseFileName(input_vtk_file.c_str());
     reader->ReadAllVariablesOn(); 
+    show_memory();
     reader->Update();
+    show_memory();
+    //std::cout << "Update" << std::endl;
+    //reader->PrintSelf(std::cout, vtkIndent(2));
+    //std::cout << std::endl;
     vtkMultiBlockDataSet*  output = reader->GetOutput(); 
     m_block_number =  output->GetNumberOfBlocks(); 
+    m_MultiBlockDataSet = output;
     std::cout << "num_blocks = " << m_block_number << std::endl; 
 }
 
-//void EnsightFormat::read(std::string input_vtk_file, const int i)
-void EnsightFormat::read(std::string input_vtk_file)
+void EnsightFormat::read(std::string input_vtk_file, const int i_block)
+//void EnsightFormat::read(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    vtkSmartPointer<vtkEnSightGoldBinaryReader> reader = vtkEnSightGoldBinaryReader::New();
-
-    reader->SetCaseFileName(input_vtk_file.c_str());
-    reader->ReadAllVariablesOn(); 
-    reader->Update();
-    vtkMultiBlockDataSet*  output = reader->GetOutput(); 
-    //m_block_number =  output->GetNumberOfBlocks(); 
-    //std::cout << "num_blocks = " << m_block_number << std::endl; 
 
     //vtkDataObject* block[m_block_number];
     //vtkUnstructuredGrid* block[num_blocks];
@@ -56,13 +66,7 @@ void EnsightFormat::read(std::string input_vtk_file)
     //block[i] = output->GetBlock(i);
     //}
 
-    //vtkNew<vtkAppendFilter> append;   
-
-    //for (int i = 0; i < m_block_number; i ++)
-    //{
-    //append->AddInputData(block[i]);
-    //}
-    vtkDataObject* block = output->GetBlock(0);
+    vtkDataObject* block = m_MultiBlockDataSet->GetBlock(i_block);
     vtkNew<vtkAppendFilter> append;   
     append->AddInputData(block);
     append->Update();
@@ -70,7 +74,6 @@ void EnsightFormat::read(std::string input_vtk_file)
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
     unstructuredGrid->ShallowCopy(append->GetOutput());       
     m_reader = unstructuredGrid;
-
 }
 
 void EnsightFormat::generate()
@@ -143,10 +146,10 @@ void EnsightFormat::setConnectionArray()
     {
         vtkCell* element = m_reader->GetCell(i);
         m_cell_type = element->GetCellType();
-        if (i % 100 ==0)
-        {
-        std::cout << "m_cell_type = " << m_cell_type << std::endl;
-        }
+        //if (i % 100 ==0)
+        //{
+        //std::cout << "m_cell_type = " << m_cell_type << std::endl;
+        //}
         int n_points = element->GetNumberOfPoints();
         for(int j = 0; j < n_points; j++)
         {
@@ -165,16 +168,6 @@ void EnsightFormat::setConnectionArray()
 void EnsightFormat::check_vtk_data_set_type(vtkUnstructuredGrid *reader)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-//    if(reader->IsFilePolyData())
-//    {
-//        std::cout << "not implemented!" << std::endl;
-//    }
-//    if(reader->IsFileUnstructuredGrid())
-//    {
-//        std::cout << "VTK DATASET TYPE IS UnstructuredGrid" << std::endl;
-//        read_vtk_file_parameter(reader);
-//    }
-
     read_vtk_file_parameter(reader);
 }
 
