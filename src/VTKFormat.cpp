@@ -95,12 +95,71 @@ void VTKFormat::setConnectionArray()
             new_id = 1 + included_points->InsertNextId( id1 );
             m_connection_array[ connection_index ] = id1;
 
-#ifdef VALUE_DEBUG
-            std::cout << "m_connection_array[" << connection_index << "] = "<< m_connection_array[j] << std::endl;
-#endif
+//#ifdef VALUE_DEBUG
+//            std::cout << "m_connection_array[" << connection_index << "] = "<< m_connection_array[j] << std::endl;
+//#endif
             connection_index++;
         }
     }
+
+//    for(int i = 0; i < 1; i++)
+//    {
+//        std::cout << "i:" << i << std::endl;
+//        for(int j = 3; j > 0; j--)
+//        {
+//            std::cout << "j:" << j << std::endl;
+//        }
+//    }
+
+//    for(int i = 4; i < 5; i++)
+//    {
+//        std::cout << "i:" << i << std::endl;
+//        for(int j = 7; j > 4; j--)
+//        {
+//            std::cout << "j:" << j << std::endl;
+//        }
+//    }
+
+//    for(int i = 0; i < 24; i++)
+//    {
+//        if(i%4 == 0)
+//        {
+//            std::cout << "m_connection_array[" << i << "] = "<< m_connection_array[i] << std::endl;
+//            continue;
+//        }else
+//        {
+//            for(int j = i+2; j > 0+; j--)
+//            {
+//                std::cout << "m_connection_array[" << j << "] = "<< m_connection_array[j] << std::endl;
+//            }
+//        }
+//    }
+    kvs::ValueArray<kvs::UInt32> tmp;
+    tmp.allocate(m_ncells * m_npoints);
+    int index = 0;
+    for(int i = 0; i < m_ncells * m_npoints; i+=4)
+    {
+        if(i%4 == 0)
+        {
+
+//            std::cout  << index << std::endl;
+            tmp[index] = m_connection_array[i];
+            index++;
+//            std::cout << "m_connection_array[" << i << "] = "<< m_connection_array[i] << std::endl;
+            for(int j = i+3; j > i;j--)
+            {
+//                std::cout << "m_connection_array[" << j << "] = "<< m_connection_array[j] << std::endl;
+
+                tmp[index] = m_connection_array[j];
+                index++;
+            }
+        }
+    }
+    for(int i = 0; i < m_ncells * m_npoints; i++)
+    {
+        std::cout << "[" << i << "]" << tmp[i]  << std::endl;
+    }
+    m_connection_array = tmp;
 }
 
 void VTKFormat::check_vtk_data_set_type( vtkGenericDataObjectReader *reader )

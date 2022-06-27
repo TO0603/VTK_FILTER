@@ -43,10 +43,9 @@ kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_t
     }
 }
 
-kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_object()
+void SetVolumeObject::create_unstructured_volume_object()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    kvs::UnstructuredVolumeObject* object = new kvs::UnstructuredVolumeObject();
     this->setCellType( convert_vtk_cell_type_to_kvs_cell_type( m_vtk_format.getCellType() ) );
     this->setVeclen( m_vtk_format.getNumberOfKinds() );
     this->setNumberOfNodes( m_vtk_format.getNumberOfNodes() );
@@ -73,5 +72,14 @@ kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_objec
     this->updateMinMaxCoords();
     this->updateMinMaxValues();
     this->updateNormalizeParameters();
-    return object;
+#ifdef VALUE_DEBUG
+    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    std::cout << "m_vtk_format.getCellType()        = " << m_vtk_format.getCellType()        << std::endl;
+    std::cout << "m_vtk_format.getNumberOfKinds()   = " << m_vtk_format.getNumberOfKinds()   << std::endl;
+    std::cout << "m_vtk_format.getNumberOfNodes()   = " << m_vtk_format.getNumberOfNodes()   << std::endl;
+    std::cout << "m_vtk_format.getNumberOfCells()   = " << m_vtk_format.getNumberOfCells()   << std::endl;
+    std::cout << "m_vtk_format.getCoordArray()      = " << m_vtk_format.getCoordArray()      << std::endl;
+    std::cout << "m_vtk_format.getConnectionArray() = " << m_vtk_format.getConnectionArray() << std::endl;
+    std::cout << "m_vtk_format.getValuewArray()     = " << m_vtk_format.getValuewArray()     << std::endl;
+#endif
 }

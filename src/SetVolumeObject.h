@@ -14,7 +14,7 @@ public:
 
 private:
     kvs::UnstructuredVolumeObject::CellType convert_vtk_cell_type_to_kvs_cell_type( int vtk_cell_type );
-    kvs::UnstructuredVolumeObject* create_unstructured_volume_object();
+    void create_unstructured_volume_object();
 };
 
 #endif // CREATEVOLUMEOBJECT_H
