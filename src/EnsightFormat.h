@@ -17,6 +17,7 @@
 
 #include <vtkGenericEnSightReader.h>
 #include <vtkEnSightGoldBinaryReader.h>  
+#include <vtkEnSightGoldReader.h>  
 #include <vtkAppendFilter.h>
 #include <vtkMultiBlockDataSet.h>
 
@@ -29,10 +30,10 @@ private:
 //    vtkNew<vtkGenericDataObjectReader> m_reader;
     //vtkGenericDataObjectReader* m_reader;
     vtkUnstructuredGrid* m_reader;
-    vtkDataSet* m_output;
+    //vtkDataSet* m_output;
     vtkMultiBlockDataSet* m_MultiBlockDataSet; 
-    int m_nfield_data_in_file;
-    int m_nscalars_in_file;
+    //int m_nfield_data_in_file;
+    //int m_nscalars_in_file;
     vtkPointData* m_point_data;
     vtkCellData* m_cell_data;
     int m_npoint_data_arrays;//m_npoint_data_arrays
@@ -50,6 +51,8 @@ private:
     kvs::ValueArray<kvs::Real32> m_coord_array;//m_coords
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
+    kvs::ValueArray<float> m_max;
+    kvs::ValueArray<float> m_min;
 
 public:
     EnsightFormat();
@@ -63,6 +66,10 @@ public:
     int getNumberOfPoints() { return m_npoints; }
     int getCellType() { return m_cell_type; }
     int getBlockNumber() { return m_block_number; }
+    kvs::ValueArray<kvs::Real32> getValueArray() { return m_value_array; }
+    kvs::ValueArray<float> getMax(){ return m_max;}
+    kvs::ValueArray<float> getMin(){ return m_min;}
+
 
     void setNumberOfNodes(long long nnodes) { m_nnodes = nnodes; }
     void setNumberOfElements(long long nelements) { m_nelements = nelements; }
@@ -76,6 +83,7 @@ public:
     void setCoordArray(); //名前変?そもそもpublicであってるんだろうか。
     void setValueArray();
     void setConnectionArray();
+    //void setucd(){} ;
 
 private:
     void check_vtk_data_set_type(vtkUnstructuredGrid* reader);

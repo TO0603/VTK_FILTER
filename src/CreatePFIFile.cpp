@@ -1,13 +1,13 @@
 #include "CreatePFIFile.h"
 
-CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterVTK):
-    m_nnodes(filterVTK.getNumberOfNodes()),
-    m_ncells(filterVTK.getNumberOfElements()),
-    m_nveclen(filterVTK.getNumberOfKinds()),
-    m_coord_array(filterVTK.getCoordArray()),
-    m_value_array(filterVTK.getValuewArray()),
-    m_connection_array(filterVTK.getConnectionArray()),
-    m_cell_type(filterVTK.getCellType()),
+CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
+    m_nnodes(filterEnsight.getNumberOfNodes()),
+    m_ncells(filterEnsight.getNumberOfElements()),
+    m_nveclen(filterEnsight.getNumberOfKinds()),
+    m_coord_array(filterEnsight.getCoordArray()),
+    m_value_array(filterEnsight.getValuewArray()),
+    m_connection_array(filterEnsight.getConnectionArray()),
+    m_cell_type(filterEnsight.getCellType()),
     m_file_name(fileName)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
@@ -19,6 +19,7 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterVTK):
     std::cout << "m_value_array.size()      = " << m_value_array.size()      << std::endl;
     std::cout << "m_connection_array.size() = " << m_connection_array.size() << std::endl;
 #endif
+    std::cout << "m_cell_type = " << m_cell_type << std::endl;
 }
 
 int CreatePFIFile::get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType)

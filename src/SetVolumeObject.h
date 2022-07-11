@@ -41,7 +41,7 @@ private:
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
     int m_vtk_cell_type;
-    float m_volume_min_max_coord[6];
+    //float m_volume_min_max_coord[6];
 public:
     SetVolumeObject(EnsightFormat vtk_parameter_reader);
 private:
