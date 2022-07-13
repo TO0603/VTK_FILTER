@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <VTKFormat.h>
-#include <CreatePFIFile.h>
+#include <CreatePFI.h>
 #include <SetVolumeObject.h>
 int main(int argc, char* argv[])
 {
@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     vtk->read( inputFilepath );
     vtk->generate();
 
-    CreatePFIFile *createPFI = new CreatePFIFile( baseName, *vtk );
+    CreatePFI *createPFI = new CreatePFI( baseName, *vtk );
     std::string kvsml_filename = createPFI->KVSMLFileName();
 
     kvs::UnstructuredVolumeObject* volume = new SetVolumeObject( *vtk );

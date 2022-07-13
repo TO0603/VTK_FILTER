@@ -20,7 +20,7 @@ DEFINES += VALUE_DEBUG
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    CreatePFIFile.cpp \
+    CreatePFI.cpp \
     SetVolumeObject.cpp \
     VTKFormat.cpp
 INCLUDEPATH += $(KVS_DIR)
@@ -41,6 +41,6 @@ LIBS += -L$(VTK_LIB_PATH) -lvtkIOLegacy-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkFiltersCore-9.1
 
 HEADERS += \
-    CreatePFIFile.h \
+    CreatePFI.h \
     SetVolumeObject.h \
     VTKFormat.h
