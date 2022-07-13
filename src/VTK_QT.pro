@@ -21,7 +21,7 @@ DEFINES += VALUE_DEBUG
 
 SOURCES += main.cpp \
     CreatePFI.cpp \
-    SetVolumeObject.cpp \
+    VolumeObjectImporter.cpp \
     VTKFormat.cpp
 INCLUDEPATH += $(KVS_DIR)
 INCLUDEPATH += $(KVS_DIR)/include
@@ -42,5 +42,5 @@ LIBS += -L$(VTK_LIB_PATH) -lvtkFiltersCore-9.1
 
 HEADERS += \
     CreatePFI.h \
-    SetVolumeObject.h \
+    VolumeObjectImporter.h \
     VTKFormat.h

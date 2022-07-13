@@ -3,7 +3,7 @@
 
 #include <VTKFormat.h>
 #include <CreatePFI.h>
-#include <SetVolumeObject.h>
+#include <VolumeObjectImporter.h>
 int main(int argc, char* argv[])
 {
     //コマンドライン引数に何か入力されているかを判別
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     CreatePFI *createPFI = new CreatePFI( baseName, *vtk );
     std::string kvsml_filename = createPFI->KVSMLFileName();
 
-    kvs::UnstructuredVolumeObject* volume = new SetVolumeObject( *vtk );
+    kvs::UnstructuredVolumeObject* volume = new VolumeObjectImporter( *vtk );
     createPFI->write( volume );
 
     kvs::KVSMLUnstructuredVolumeObject* kvsml =
