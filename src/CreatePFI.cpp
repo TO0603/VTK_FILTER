@@ -33,7 +33,7 @@ int CreatePFI::get_pfi_unstructured_cell_type( kvs::UnstructuredVolumeObject::Ce
     }
 }
 
-void CreatePFI::createPFIFile( kvs::UnstructuredVolumeObject* volume )
+void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     FILE *pfi = NULL;

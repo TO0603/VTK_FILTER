@@ -22,7 +22,7 @@ public:
     std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_0000001.kvsml"; }
     std::string getFileName() { return m_file_name; }
     void setFileName( std::string file_name ) { m_file_name = file_name; } //?
-    void createPFIFile( kvs::UnstructuredVolumeObject* );
+    void write( kvs::UnstructuredVolumeObject* );
 
 private:
     int get_pfi_unstructured_cell_type( kvs::UnstructuredVolumeObject::CellType kvs_cellType );

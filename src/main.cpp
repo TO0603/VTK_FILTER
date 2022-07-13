@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     std::string kvsml_filename = createPFI->KVSMLFileName();
 
     kvs::UnstructuredVolumeObject* volume = new SetVolumeObject( *vtk );
-    createPFI->createPFIFile( volume );
+    createPFI->write( volume );
 
     kvs::KVSMLUnstructuredVolumeObject* kvsml =
             new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
