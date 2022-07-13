@@ -65,7 +65,7 @@ void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
     std::cout << "file_type = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //ファイル数
-    itmp = 1;//
+    itmp = 0;//
     std::cout << "nfile = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //成分数(ベクトル?)
@@ -73,11 +73,11 @@ void CreatePFIFile::createPFIFile( kvs::UnstructuredVolumeObject* volume )
     std::cout << "nveclen = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //開始ステップ
-    itmp = 0;
+    itmp = 1;
     std::cout << "first_step = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //終了ステップ
-    itmp = 0;
+    itmp = 1;
     std::cout << "end step = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //サブボリューム数
