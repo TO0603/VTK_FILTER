@@ -17,13 +17,13 @@ int main(int argc, char* argv[])
     std::string inputFilepath = argv[1];
     int path_i = inputFilepath.find_last_of( "/" ) + 1;
     int ext_i = inputFilepath.find_last_of( "." );
-    std::string fileName = inputFilepath.substr( path_i, ext_i-path_i );
+    std::string baseName = inputFilepath.substr( path_i, ext_i-path_i );
 
     VTKFormat *vtk = new VTKFormat();
     vtk->read( inputFilepath );
     vtk->generate();
 
-    CreatePFIFile *createPFI = new CreatePFIFile( fileName, *vtk );
+    CreatePFIFile *createPFI = new CreatePFIFile( baseName, *vtk );
     std::string kvsml_filename = createPFI->KVSMLFileName();
 
     kvs::UnstructuredVolumeObject* volume = new SetVolumeObject( *vtk );
