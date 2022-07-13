@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
     //コマンドライン引数に何か入力されているかを判別
     if (argc != 2)
     {
-        std::cerr << "Usage: " << argv[0] << " InputFilename e.g. hoge.vtk" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " InputFilepath e.g. hoge.vtk" << std::endl;
         return EXIT_FAILURE;
     }
 
