@@ -155,10 +155,12 @@ void VTKFormat::setConnectionArray()
             }
         }
     }
+#ifdef VALUE_DEBUG
     for(int i = 0; i < m_ncells * m_npoints; i++)
     {
         std::cout << "[" << i << "]" << tmp[i]  << std::endl;
     }
+#endif
     m_connection_array = tmp;
 }
 
