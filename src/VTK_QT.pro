@@ -11,8 +11,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 # ifdef DEBUGのコードを確認する場合はコメントアウトを外してください。
 # .proファイルを更新したらqmakeとリビルドすること。
-DEFINES += DEBUG
-DEFINES += VALUE_DEBUG
+#DEFINES += DEBUG
+#DEFINES += VALUE_DEBUG
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
