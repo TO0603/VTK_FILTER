@@ -50,39 +50,75 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
     pfi = fopen(pfiFileName.c_str(), "wb");
     //頂点数
     itmp = m_vtk_format.getNumberOfNodes();
+
+#ifdef VALUE_DEBUG
     std::cout << "nnode = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //要素数
     itmp = m_vtk_format.getNumberOfCells();
+
+#ifdef VALUE_DEBUG
     std::cout << "ncell = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //要素タイプ
     itmp = get_pfi_unstructured_cell_type(volume->cellType());
+
+#ifdef VALUE_DEBUG
     std::cout << "element_type = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //ファイルタイプ
     itmp = 0;
+
+#ifdef VALUE_DEBUG
     std::cout << "file_type = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //ファイル数
     itmp = 0;//
+
+#ifdef VALUE_DEBUG
     std::cout << "nfile = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //成分数(ベクトル?)
     itmp = m_vtk_format.getNumberOfKinds();
+
+#ifdef VALUE_DEBUG
     std::cout << "nveclen = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //開始ステップ
     itmp = 0;
+
+#ifdef VALUE_DEBUG
     std::cout << "first_step = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //終了ステップ
     itmp = 0;
+
+#ifdef VALUE_DEBUG
     std::cout << "end step = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //サブボリューム数
     itmp = 1;
+
+#ifdef VALUE_DEBUG
     std::cout << "nsubvolume = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //座標の最大最小値
     ftmp[0] = volume->minObjectCoord().x();
@@ -91,38 +127,62 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
     ftmp[3] = volume->maxObjectCoord().x();
     ftmp[4] = volume->maxObjectCoord().y();
     ftmp[5] = volume->maxObjectCoord().z();
+
+#ifdef VALUE_DEBUG
     std::cout << "min_x = " << ftmp[0] << std::endl;
     std::cout << "min_y = " << ftmp[1] << std::endl;
     std::cout << "min_z = " << ftmp[2] << std::endl;
     std::cout << "max_x = " << ftmp[3] << std::endl;
     std::cout << "max_y = " << ftmp[4] << std::endl;
     std::cout << "max_z = " << ftmp[5] << std::endl;
+#endif
+
     fwrite(&ftmp, 4, 6, pfi);
     //サブボリュームの頂点数
     itmp = m_vtk_format.getNumberOfNodes();
+
+#ifdef VALUE_DEBUG
     std::cout << "subvolume_nnode = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //サブボリュームの要素数
     itmp = m_vtk_format.getNumberOfCells();
+
+#ifdef VALUE_DEBUG
     std::cout << "subvolume_ncell = " << itmp << std::endl;
+#endif
+
     fwrite(&itmp, 4, 1, pfi);
     //サブボリュームの座標の最大最小値
     fwrite(&ftmp, 4, 6, pfi);
+
+#ifdef VALUE_DEBUG
     std::cout << "subvolume_min_x = " << ftmp[0] << std::endl;
     std::cout << "subvolume_min_y = " << ftmp[1] << std::endl;
     std::cout << "subvolume_min_z = " << ftmp[2] << std::endl;
     std::cout << "subvolume_max_x = " << ftmp[3] << std::endl;
     std::cout << "subvolume_max_y = " << ftmp[4] << std::endl;
     std::cout << "subvolume_max_z = " << ftmp[5] << std::endl;
+#endif
+
     for(int i = 0; i < m_vtk_format.getNumberOfKinds(); i++)
     {
         //ステップiの成分1最小値
         oftmp = m_vtk_format.getMin().at(i);
+
+#ifdef VALUE_DEBUG
         std::cout << "step[" << i << "] min_veclen = " << oftmp << std::endl;
+#endif
+
         fwrite(&oftmp, 4, 1, pfi);
         //ステップiの成分1最大値
         oftmp = m_vtk_format.getMax().at(i);
+
+#ifdef VALUE_DEBUG
         std::cout << "step[" << i << "] max_veclen = " << oftmp << std::endl;
+#endif
+
         fwrite(&oftmp, 4, 1, pfi);
     }    
 
