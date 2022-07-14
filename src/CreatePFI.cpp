@@ -2,7 +2,7 @@
 
 CreatePFI::CreatePFI( std::string fileName, VTKFormat vtkFormat ):
     m_vtk_format( vtkFormat ),
-    m_file_name( fileName )
+    m_base_name( fileName )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 }
@@ -40,7 +40,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
     int itmp;
     float ftmp[6];
     float oftmp;
-    std::string pfiFileName = "./out/" + m_file_name + ".pfi";
+    std::string pfiFileName = "./out/" + m_base_name + ".pfi";
 
 #ifdef VALUE_DEBUG
     std::cout << "volume->minObjectCoord() = " << volume->minObjectCoord()  << std::endl;

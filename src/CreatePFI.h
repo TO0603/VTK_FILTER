@@ -15,13 +15,13 @@ class CreatePFI
 
 private:
     VTKFormat m_vtk_format;
-    std::string m_file_name;
+    std::string m_base_name;
 
 public:
     CreatePFI(  std::string fileName,VTKFormat vtkFormat );
-    std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_0000001.kvsml"; }
-    std::string getFileName() { return m_file_name; }
-    void setFileName( std::string file_name ) { m_file_name = file_name; } //?
+    std::string KVSMLFileName() { return "./out/" + m_base_name + "_00000_0000001_0000001.kvsml"; }
+    std::string getFileName() { return m_base_name; }
+    void setFileName( std::string file_name ) { m_base_name = file_name; } //?
     void write( kvs::UnstructuredVolumeObject* );
 
 private:
