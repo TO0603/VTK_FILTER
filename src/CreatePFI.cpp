@@ -73,11 +73,11 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
     std::cout << "nveclen = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //開始ステップ
-    itmp = 1;
+    itmp = 0;
     std::cout << "first_step = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //終了ステップ
-    itmp = 1;
+    itmp = 0;
     std::cout << "end step = " << itmp << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //サブボリューム数
