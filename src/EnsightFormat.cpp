@@ -36,7 +36,6 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     vtkSmartPointer<vtkEnSightGoldBinaryReader> reader = vtkEnSightGoldBinaryReader::New();
-    //vtkSmartPointer<vtkGenericEnSightReader> reader = vtkGenericEnSightReader::New();
 
     //reader->PrintSelf(std::cout, vtkIndent(2));
     //reader->DebugOn();
@@ -48,12 +47,23 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     //reader->PrintSelf(std::cout, vtkIndent(2));
     vtkMultiBlockDataSet*  output = reader->GetOutput(); 
     //output->PrintSelf(std::cout, vtkIndent(2));
-    m_block_number =  output->GetNumberOfBlocks(); 
-   
+    m_block_number =  output -> GetNumberOfBlocks(); 
+    m_total_nodes  =  output -> GetNumberOfPoints();
+    m_total_cells  =  output -> GetNumberOfCells(); 
+
+    //double bounds[6];
+    output -> GetBounds(m_total_bounds);
+    for (auto i: m_total_bounds)
+    {
+        std::cout << " bounds =  " << i <<std::endl;
+    }
+
+
     //m_MultiBlockDataSet = vtkMultiBlockDataSet::New();
     m_MultiBlockDataSet = output;
     //m_MultiBlockDataSet -> ShallowCopy(output);
     std::cout << "num_blocks = " << m_block_number << std::endl; 
+
 
     //debug 
     //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
@@ -76,7 +86,6 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     //std::cout << "debug write field " << std::endl;
     //std::cout <<  std::endl;
     //field -> PrintSelf(std::cout, vtkIndent(2));
-
 
     //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     //std::cout << "append"  << std::endl;
@@ -108,8 +117,6 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     //m_connection_array.allocate(20);
     ////read_vtk_file_parameter(unstructuredGrid);
     ////read_vtk_file_parameter(m_reader);
-
-
 }
 
 void EnsightFormat::read(std::string input_vtk_file, const int i_block)
@@ -136,6 +143,7 @@ void EnsightFormat::read(std::string input_vtk_file, const int i_block)
     //unstructuredGrid->ShallowCopy(append->GetOutput());       
     m_reader = unstructuredGrid;
 
+    //m_reader -> PrintSelf(std::cout, vtkIndent(2));
     //debug
     //read_vtk_file_parameter(unstructuredGrid);
     //read_vtk_file_parameter(m_reader);
@@ -285,9 +293,6 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     m_min.allocate( m_nkinds );
     m_max.allocate( m_nkinds );
 
-    int values_index = 0;
-
-
 //#ifdef VALUE_DEBUG
     //    std::cout << "m_point_data                      = " << m_point_data                      << std::endl;
     //    std::cout << "m_cell_data                       = " << m_cell_data                       << std::endl;
@@ -326,6 +331,7 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     //    p++;
     //}
 
+    int values_index = 0;
     for( int i = 0; i < m_nkinds; i++ )
     {
         getMin().at(i) = getValueArray().at(i * m_nnodes);

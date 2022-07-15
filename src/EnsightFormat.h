@@ -50,6 +50,9 @@ private:
     int m_npoints;
     int m_cell_type;
     int m_block_number;
+    int m_total_nodes;
+    int m_total_cells;
+    double m_total_bounds[6];
     kvs::ValueArray<kvs::Real32> m_coord_array;//m_coords
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
@@ -68,10 +71,14 @@ public:
     int getNumberOfPoints() { return m_npoints; }
     int getCellType() { return m_cell_type; }
     int getBlockNumber() { return m_block_number; }
+    int getTotalNodes() { return m_total_nodes; }
+    int getTotalCells() { return m_total_cells; }
+    double* getTotalBounds() { return m_total_bounds;}
     kvs::ValueArray<kvs::Real32> getValueArray() { return m_value_array; }
     kvs::ValueArray<float> getMax(){ return m_max;}
     kvs::ValueArray<float> getMin(){ return m_min;}
-
+    vtkMultiBlockDataSet* getMultiBlockDataSet() { return m_MultiBlockDataSet; }
+    vtkUnstructuredGrid* getUnstructuredGrid() {return m_reader;}
 
     void setNumberOfNodes(long long nnodes) { m_nnodes = nnodes; }
     void setNumberOfElements(long long nelements) { m_nelements = nelements; }

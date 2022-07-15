@@ -17,8 +17,8 @@ int main(int argc, char* argv[])
     //コマンドライン引数からファイル名を取得
     //std::string inputFilename = argv[1];
     //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/hex.case";
-    std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
-    //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestTetra.case";
+    //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
+    std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestTetra.case";
     //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestVec.case";
     int path_i = inputFilename.find_last_of("/") + 1;
     int ext_i = inputFilename.find_last_of(".");
@@ -26,18 +26,21 @@ int main(int argc, char* argv[])
 
     EnsightFormat *vtk = new EnsightFormat();
     vtk->setNumberOfBlock(inputFilename);
-    int block_number = vtk ->getBlockNumber();
-    //int block_number = 1;
+    //int block_number = vtk ->getBlockNumber();
+    int block_number = 1;
     
+    CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
+    //std::string kvsml_filename = createPFI->KVSMLFileName(block_number);
 
-    for (int i_block = 0; i_block < block_number; i_block++)
+    for (int i_block = 0; i_block < block_number ; i_block++)
     {
     vtk->read(inputFilename,i_block);
     vtk->generate();
 
-    //CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
-    //std::string kvsml_filename = createPFI->KVSMLFileName(i_block);
-
+    //if(i_block ==0)
+    //{
+    //createPFI -> sub_allocate(*vtk); 
+    //}
     Filter_write* filter_write = new Filter_write(fileName,*vtk,i_block, block_number); 
     //filter_write->write_kvsml(); 
     filter_write->set_filename();
@@ -45,24 +48,25 @@ int main(int argc, char* argv[])
     filter_write->write_kvsml_value_single();
     filter_write->write_kvsml_geom();
     //filter_write->write_pfi();
-    if(i_block ==0)
-    {
-    filter_write->write_pfl(); 
-    }
-    kvs::UnstructuredVolumeObject* volume = new SetVolumeObject(*vtk);
-    filter_write->write_pfi(volume);
+    //if(i_block ==0)
+    //{
+    //filter_write->write_pfl(); 
+    //}
     //kvs::UnstructuredVolumeObject* volume = new SetVolumeObject(*vtk);
-    //createPFI->createPFIFile(volume);
+    //filter_write->write_pfi(volume);
 
 //    kvs::KVSMLUnstructuredVolumeObject* kvsml =
 //            new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
 //    kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
 //    std::cout << "setWritingDataType " <<std::endl;
 //    kvsml->write(kvsml_filename);
+    createPFI -> update_subvolume(*vtk, i_block);
 
-    //delete createPFI;
     delete filter_write;
     }
+
+    createPFI->write_pfi();
+    delete createPFI;
 
     std::cout << "EXIT" << std::endl;
     return EXIT_SUCCESS;
