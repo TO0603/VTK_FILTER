@@ -36,23 +36,80 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     vtkSmartPointer<vtkEnSightGoldBinaryReader> reader = vtkEnSightGoldBinaryReader::New();
-    //vtkSmartPointer<vtkEnSightGoldReader> reader = vtkEnSightGoldReader::New();
+    //vtkSmartPointer<vtkGenericEnSightReader> reader = vtkGenericEnSightReader::New();
 
+    //reader->PrintSelf(std::cout, vtkIndent(2));
+    //reader->DebugOn();
     reader->SetCaseFileName(input_vtk_file.c_str());
     reader->ReadAllVariablesOn(); 
     show_memory();
     reader->Update();
     show_memory();
-    //std::cout << "Update" << std::endl;
     //reader->PrintSelf(std::cout, vtkIndent(2));
-    //std::cout << std::endl;
     vtkMultiBlockDataSet*  output = reader->GetOutput(); 
+    //output->PrintSelf(std::cout, vtkIndent(2));
     m_block_number =  output->GetNumberOfBlocks(); 
    
     //m_MultiBlockDataSet = vtkMultiBlockDataSet::New();
     m_MultiBlockDataSet = output;
     //m_MultiBlockDataSet -> ShallowCopy(output);
     std::cout << "num_blocks = " << m_block_number << std::endl; 
+
+    //debug 
+    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    //std::cout <<  std::endl;
+    //vtkDataObject* block = output ->GetBlock(0);
+    //block -> PrintSelf(std::cout, vtkIndent(2));
+    //m_point_data         = block->GetPointData();
+
+    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    //std::cout <<  std::endl;
+    //vtkInformation* info = block -> GetInformation();
+    //info -> PrintSelf(std::cout, vtkIndent(2));
+
+    //vtkDataSetAttributes* dataSetPoint = block -> GetAttributes(0); 
+    //std::cout << "debug write  DataSetAttributes" << std::endl;
+    //std::cout <<  std::endl;
+    //dataSetPoint -> PrintSelf(std::cout, vtkIndent(2));
+
+    //vtkFieldData* field = block -> GetFieldData();
+    //std::cout << "debug write field " << std::endl;
+    //std::cout <<  std::endl;
+    //field -> PrintSelf(std::cout, vtkIndent(2));
+
+
+    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    //std::cout << "append"  << std::endl;
+    //vtkNew<vtkAppendFilter> append;   
+    //append -> PrintSelf(std::cout, vtkIndent(2));
+    //append->AddInputData(block);
+    //append->Update();
+    //
+    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    //std::cout << "ugalg"  << std::endl;
+    //vtkSmartPointer<vtkUnstructuredGridAlgorithm> ugAlgorithm = vtkUnstructuredGridAlgorithm::New();   
+    //vtkNew<vtkUnstructuredGridAlgorithm> ugAlgorithm;
+    //ugAlgorithm -> PrintSelf(std::cout, vtkIndent(2));
+    //ugAlgorithm->AddInputData(0,block);
+    //ugAlgorithm->Update();
+
+    //vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
+    ////unstructuredGrid = unstructuredGrid -> SafeDownCast(block); 
+    //unstructuredGrid = dynamic_cast<vtkUnstructuredGrid *>(block);
+    ////m_reader = vtkUnstructuredGrid::New();
+    ////unstructuredGrid->ShallowCopy(append->GetOutput());       
+    ////unstructuredGrid->ShallowCopy(ugAlgorithm->GetOutput());       
+    //m_reader = unstructuredGrid;
+
+    ////debug
+    ////std::cout << "debug write unstructuredGrid " << std::endl;
+    //m_coord_array.allocate(24);
+    //m_value_array.allocate(24);
+    //m_connection_array.allocate(20);
+    ////read_vtk_file_parameter(unstructuredGrid);
+    ////read_vtk_file_parameter(m_reader);
+
+
 }
 
 void EnsightFormat::read(std::string input_vtk_file, const int i_block)
@@ -69,23 +126,24 @@ void EnsightFormat::read(std::string input_vtk_file, const int i_block)
     //}
 
     vtkDataObject* block = m_MultiBlockDataSet->GetBlock(i_block);
-    vtkNew<vtkAppendFilter> append;   
-    append->AddInputData(block);
-    append->Update();
+    //vtkNew<vtkAppendFilter> append;   
+    //append->AddInputData(block);
+    //append->Update();
 
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
+    unstructuredGrid = dynamic_cast<vtkUnstructuredGrid *>(block);
     //m_reader = vtkUnstructuredGrid::New();
-    unstructuredGrid->ShallowCopy(append->GetOutput());       
-    //m_reader->ShallowCopy(append->GetOutput());       
+    //unstructuredGrid->ShallowCopy(append->GetOutput());       
     m_reader = unstructuredGrid;
-    read_vtk_file_parameter(unstructuredGrid);
-    read_vtk_file_parameter(m_reader);
+
+    //debug
+    //read_vtk_file_parameter(unstructuredGrid);
+    //read_vtk_file_parameter(m_reader);
 }
 
 void EnsightFormat::generate()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //check_vtk_data_set_type(m_reader);
     read_vtk_file_parameter(m_reader);
 }
 
@@ -110,37 +168,62 @@ void EnsightFormat::setValueArray()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 #ifdef VALUE_DEBUG
-    std::cout << "m_value_array(points)" << std::endl;
+    std::cout << "m_value_array( points )" << std::endl;
 #endif
     vtkDataArray* point_data_array = NULL;
     double* point_components = NULL;
-    for(int i = 0; i < m_npoint_data_arrays; i++ )
+    int value_index = 0;
+    for( int i = 0; i < m_npoint_data_arrays; i++ )
     {
-        point_data_array = m_point_data->GetArray(i);
-        for(int j = 0; j < m_npoint_data_tuples; j++)
+        point_data_array = m_point_data->GetArray( i );
+        for( int j = 0; j < m_npoint_data_tuples; j++ )
         {
-            point_components = point_data_array->GetTuple(j);
-            m_value_array[j] = point_components[0];
-#ifdef VALUE_DEBUG
-            //            std::cout << "[" << j << "]" << m_value_array[j] << std::endl;
-            std::cout << "m_value_array[" << j << "] = "<< m_value_array[j] << std::endl;
+            point_components = point_data_array->GetTuple( j );
+            m_value_array[value_index] = point_components[0];
+#ifdef VALUE_DEBUG            
+            std::cout << "m_value_array[" << value_index << "] = "<< m_value_array[value_index] << std::endl;
 #endif
+            value_index++;
         }
     }
-
-    //    vtkDataArray* cell_data_array = NULL;
-    //    double* cell_components = NULL;
-    //    for(int i = 0; i < m_npoint_data_arrays; i++ )
-    //    {
-    //        cell_data_array = m_cell_data->GetArray(i);
-    //        for(int j = 0; j < m_ncell_data_tuples; j++)
-    //        {
-    //            cell_components = cell_data_array->GetTuple(j);
-    //            m_value_array[j] = cell_components[0];
-    //            std::cout << m_value_array[j] << std::endl;
-    //        }
-    //    }
 }
+
+
+//void EnsightFormat::setValueArray()
+//{
+//    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+//#ifdef VALUE_DEBUG
+//    std::cout << "m_value_array(points)" << std::endl;
+//#endif
+//    vtkDataArray* point_data_array = NULL;
+//    double* point_components = NULL;
+//    for(int i = 0; i < m_npoint_data_arrays; i++ )
+//    {
+//        point_data_array = m_point_data->GetArray(i);
+//        for(int j = 0; j < m_npoint_data_tuples; j++)
+//        {
+//            point_components = point_data_array->GetTuple(j);
+//            m_value_array[j] = point_components[0];
+////#ifdef VALUE_DEBUG
+//            //            std::cout << "[" << j << "]" << m_value_array[j] << std::endl;
+//            std::cout << "m_value_array[" << j << "] = "<< m_value_array[j] << std::endl;
+////#endif
+//        }
+//    }
+//
+//    //    vtkDataArray* cell_data_array = NULL;
+//    //    double* cell_components = NULL;
+//    //    for(int i = 0; i < m_npoint_data_arrays; i++ )
+//    //    {
+//    //        cell_data_array = m_cell_data->GetArray(i);
+//    //        for(int j = 0; j < m_ncell_data_tuples; j++)
+//    //        {
+//    //            cell_components = cell_data_array->GetTuple(j);
+//    //            m_value_array[j] = cell_components[0];
+//    //            std::cout << m_value_array[j] << std::endl;
+//    //        }
+//    //    }
+//}
 
 void EnsightFormat::setConnectionArray()
 {
@@ -218,30 +301,45 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     std::cout << "m_nelements              = " << m_nelements              << std::endl;
     std::cout << "m_nkinds                 = " << m_nkinds                 << std::endl;
     std::cout << "m_npoints                = " << m_npoints                << std::endl;
+    std::cout << "m_value_array.size()      = " << m_value_array.size()      << std::endl;
 //#endif
-    for( int i = 0; i < m_nkinds; i++ )
-    {
-        //getMin().at(i) = getValueArray().at(i * getNumberOfNodes());
-        //getMax().at(i) = getValueArray().at(i * getNumberOfNodes());
-        getMin().at(i) = getValueArray().at(i * m_nnodes);
-        getMax().at(i) = getValueArray().at(i * m_nnodes);
-//    std::cout << "m_max  " <<    i   <<    "  = " << getMin().at(i)                 << std::endl;
-//    std::cout << "m_min  " <<    i   <<    "  = " << getMax().at(i)                << std::endl;
-        for( int j = 0; j < getNumberOfNodes(); j++ )
-        {
-            float tmp = getValueArray().at(values_index);
-    std::cout << "tmp_" <<    i   << "_" << j <<  " = " << tmp            << std::endl;
-            //m_vtk_format.getMin().at(i) = kvs::Math::Min<float>(m_vtk_format.getMin().at(i),tmp);
-            getMin().at(i) = kvs::Math::Min<float>(getMin().at(i),tmp);
-            getMax().at(i) = kvs::Math::Max<float>(getMin().at(i),tmp);
-            values_index++;
-        }
-    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
-    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
-    }  
 
+    //std::cout << "debug 1"  << std::endl;
+    //int p = 0;
+    //for ( auto i : m_value_array )
+    //{
+    //std::cout << "m_value_array[" << p << "]     = " << i << std::endl;
+    //    p++;
+    //}
 
     this->setCoordArray();
     this->setValueArray();
     this->setConnectionArray();
+
+    //std::cout << "debug 2"  << std::endl;
+    //p = 0;
+    //for ( auto i : m_value_array )
+    ////for ( int  i = 0; i < 8; i++ )
+    //{
+    //std::cout << "m_value_array[" << p << "]     = " << i << std::endl;
+    ////std::cout << "m_value_array[" << p << "]     = " << getValueArray().at(i) << std::endl;
+    //    p++;
+    //}
+
+    for( int i = 0; i < m_nkinds; i++ )
+    {
+        getMin().at(i) = getValueArray().at(i * m_nnodes);
+        getMax().at(i) = getValueArray().at(i * m_nnodes);
+        for( int j = 0; j < getNumberOfNodes(); j++ )
+        {
+            float tmp = getValueArray().at(values_index);
+    //std::cout << "tmp_" <<    i   << "_" << j <<  " = " << tmp            << std::endl;
+            getMin().at(i) = kvs::Math::Min<float>(getMin().at(i),tmp);
+            getMax().at(i) = kvs::Math::Max<float>(getMax().at(i),tmp);
+            values_index++;
+        }
+    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
+    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
+    }  
+
 }

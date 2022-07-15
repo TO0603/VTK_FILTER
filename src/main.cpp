@@ -17,17 +17,17 @@ int main(int argc, char* argv[])
     //コマンドライン引数からファイル名を取得
     //std::string inputFilename = argv[1];
     //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/hex.case";
-    //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
+    std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
     //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestTetra.case";
-    std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestVec.case";
+    //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestVec.case";
     int path_i = inputFilename.find_last_of("/") + 1;
     int ext_i = inputFilename.find_last_of(".");
     std::string fileName = inputFilename.substr(path_i,ext_i-path_i);
 
     EnsightFormat *vtk = new EnsightFormat();
     vtk->setNumberOfBlock(inputFilename);
-    //int block_number = vtk ->getBlockNumber();
-    int block_number = 1;
+    int block_number = vtk ->getBlockNumber();
+    //int block_number = 1;
     
 
     for (int i_block = 0; i_block < block_number; i_block++)

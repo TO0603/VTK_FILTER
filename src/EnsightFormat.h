@@ -14,12 +14,14 @@
 #include <vtkDataArray.h>
 #include <vtkIdList.h>
 #include <vtkCellDataToPointData.h>
+#include <vtkInformation.h>
 
 #include <vtkGenericEnSightReader.h>
 #include <vtkEnSightGoldBinaryReader.h>  
 #include <vtkEnSightGoldReader.h>  
 #include <vtkAppendFilter.h>
 #include <vtkMultiBlockDataSet.h>
+#include <vtkUnstructuredGridAlgorithm.h>
 
 #include <kvs/ValueArray>
 

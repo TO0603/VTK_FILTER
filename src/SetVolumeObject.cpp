@@ -73,11 +73,6 @@ kvs::UnstructuredVolumeObject::CellType SetVolumeObject::convert_vtk_cell_type_t
     }
 }
 
-//int SetVolumeObject::is_triangle(int vtk_cellType)
-//{
-//
-//}
-
 
 kvs::UnstructuredVolumeObject* SetVolumeObject::create_unstructured_volume_object()
 {
