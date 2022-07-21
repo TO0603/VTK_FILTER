@@ -20,6 +20,7 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
     m_value_array(0),
     m_connection_array(0),
     m_cell_type(0),
+    m_cell_type_index (0),
     m_file_name(fileName)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
@@ -35,13 +36,8 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
     m_sub_nnodes.allocate(m_nblocks);
     m_sub_ncells.allocate(m_nblocks);
     m_sub_coord_array.allocate(m_nblocks*6);
-    //m_sub_value_array.allocate(m_nblocks*6);
     filterEnsight.getMultiBlockDataSet() -> GetBounds(m_total_bounds) ; 
-
-    //    for (auto i: m_total_bounds)
-    //    {
-    //        std::cout << " bounds =  " << i <<std::endl;
-    //    }
+    m_cell_type_array.allocate(8);
 }
 
 void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int iblock)
@@ -50,9 +46,9 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int ibloc
     if(iblock == 0)
     {
         update_member_function(filterEnsight);
-        //m_sub_value_arrayallocate(m_nblocks * filterEnsight.getNumberOfKinds()) ;
     }
-    //m_sub_value_array.allocate(m_nblocks*6);
+
+    update_cell_type(filterEnsight);
     m_sub_nnodes.at(iblock) =  filterEnsight.getNumberOfNodes();
     std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
     m_sub_ncells.at(iblock) =  filterEnsight.getNumberOfElements();
@@ -83,18 +79,27 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int ibloc
         m_sub_value_array.at(ii + iblock * m_nveclen *2 )     = m_min[i];
         m_sub_value_array.at(ii + 1 + iblock * m_nveclen *2 ) = m_max[i];
     }
-
-    //m_sub_coord_array.at(i) =  filterEnsight. 
-    //    m_sub_nnodes.allocate(m_nblocks);
-    //    m_sub_ncells.allocate(m_nblocks);
-    //    m_sub_coord_array.allocate(m_nblocks*6);
 } 
 
 void CreatePFIFile::update_member_function(EnsightFormat filterEnsight)
 {
     m_nveclen = filterEnsight.getNumberOfKinds();
-    m_cell_type = filterEnsight.getCellType(); 
+    //m_cell_type = filterEnsight.getCellType(); 
     m_sub_value_array.allocate(m_nblocks * m_nveclen * 2) ;
+}
+
+void CreatePFIFile::update_cell_type(EnsightFormat filterEnsight)
+{
+    int tmp_cell_type;
+    tmp_cell_type = convert_celltype(filterEnsight.getCellType());
+
+    if (!(tmp_cell_type == m_cell_type))
+    {
+       m_cell_type_array.at(m_cell_type_index) = tmp_cell_type; 
+       m_cell_type_index ++;
+ 
+    }
+    m_cell_type = tmp_cell_type;
 
 }
 
@@ -153,7 +158,7 @@ void CreatePFIFile::write_pfi()
     fwrite(&itmp, 4, 1, pfi);
     std::cout << "ncells          = " << itmp           << std::endl;
     //要素タイプ
-    convert_celltype();
+    //convert_celltype();
     itmp = m_cell_type;
     std::cout << "m_cell_type     = " << itmp           << std::endl;
     fwrite(&itmp, 4, 1, pfi);
@@ -188,12 +193,6 @@ void CreatePFIFile::write_pfi()
     ftmp[3] = m_total_bounds[1];
     ftmp[4] = m_total_bounds[3];
     ftmp[5] = m_total_bounds[5];
-    //ftmp[0] = m_object->minObjectCoord().x();
-    //ftmp[1] = m_object->minObjectCoord().y();
-    //ftmp[2] = m_object->minObjectCoord().z();
-    //ftmp[3] = m_object->maxObjectCoord().x();
-    //ftmp[4] = m_object->maxObjectCoord().y();
-    //ftmp[5] = m_object->maxObjectCoord().z();
     std::cout << "min_x      = " << ftmp[0]           << std::endl;
     std::cout << "min_y      = " << ftmp[1]           << std::endl;
     std::cout << "min_z      = " << ftmp[2]           << std::endl;
@@ -318,32 +317,34 @@ void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
     fclose(pfi);
 }
 
-void CreatePFIFile::convert_celltype()
+//void CreatePFIFile::convert_celltype()
+int  CreatePFIFile::convert_celltype(int cell_type)
 {
     kvsCellType conv_cell;
     int type_num;
-    if(m_cell_type == 10) // tetrahedra
+    if(cell_type == 10) // tetrahedra
     {
         conv_cell = kvsCellType::Tetrahedra;
         type_num = 4;
         std::cout<< "conv_cell = " << conv_cell << std::endl;
     }
-    else  if(m_cell_type == 5)  // triangle
+    else  if(cell_type == 5)  // triangle
     {
         conv_cell = kvsCellType::Triangle;
-        type_num = 3;
+        //type_num = 3;
+        type_num = 2;
     }
-    else if(m_cell_type == 12) // hexahedra
+    else if(cell_type == 12) // hexahedra
     {
         conv_cell = kvsCellType::Hexahedra;
         type_num = 8;
     }
-    else if(m_cell_type == 13) // Prism
+    else if(cell_type == 13) // Prism
     {
         conv_cell = kvsCellType::Prism;
         type_num = 6;
     }
-    else if(m_cell_type == 14) // Pyramid
+    else if(cell_type == 14) // Pyramid
     {
         conv_cell = kvsCellType::Pyramid;
         type_num = 5;
@@ -353,8 +354,8 @@ void CreatePFIFile::convert_celltype()
         conv_cell = kvsCellType::ElementTypeUnknown; 
         type_num = 0;
     }
-    m_cell_type = conv_cell; 
-
+    //m_cell_type = conv_cell; 
+    return conv_cell;
 }
 
 

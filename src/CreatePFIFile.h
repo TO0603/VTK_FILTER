@@ -52,13 +52,14 @@ enum kvsCellType
     kvs::ValueArray<kvs::Real32> m_value_array;
     kvs::ValueArray<kvs::UInt32> m_connection_array;
     int m_cell_type;
+    int m_cell_type_index;
+    kvs::ValueArray<int> m_cell_type_array;
     std::string m_file_name;
 
 
 public:
     CreatePFIFile(std::string fileName,EnsightFormat vtk_parameter_reader);
-    //std::string KVSMLFileName() { return "./out/" + m_file_name + "_00000_0000001_" + m_block_number + ".kvsml"; }
-    std::string KVSMLFileName(const int i_block) { return "./out/" + m_file_name + "_00000_0000001_" + std::to_string(i_block) + ".kvsml"; }
+    //std::string KVSMLFileName(const int i_block) { return "./out/" + m_file_name + "_00000_0000001_" + std::to_string(i_block) + ".kvsml"; }
     void setFileName(std::string file_name) { m_file_name = file_name; } //?
     void createPFIFile(kvs::UnstructuredVolumeObject*);
     void update_subvolume( EnsightFormat ensightFormat, const int iblock);
@@ -67,7 +68,9 @@ public:
 private:
     
     void update_member_function(EnsightFormat ensightFormat);
-    void convert_celltype();
+    void update_cell_type(EnsightFormat ensightFormat);
+    //void convert_celltype();
+    int convert_celltype(int celltype);
     int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);   
 };
 

@@ -29,15 +29,15 @@ class EnsightFormat
 {
 
 private:
-//    vtkNew<vtkGenericDataObjectReader> m_reader;
     //vtkGenericDataObjectReader* m_reader;
     vtkUnstructuredGrid* m_reader;
     //vtkDataSet* m_output;
     vtkMultiBlockDataSet* m_MultiBlockDataSet; 
-    //int m_nfield_data_in_file;
-    //int m_nscalars_in_file;
     vtkPointData* m_point_data;
     vtkCellData* m_cell_data;
+    vtkDataArrayCollection * m_DataArrayCollection;
+    vtkDataArray * m_DataArray;
+    float* m_time;
     int m_npoint_data_arrays;//m_npoint_data_arrays
     int m_npoint_data_components;
     int m_npoint_data_tuples;
@@ -92,7 +92,6 @@ public:
     void setCoordArray(); //名前変?そもそもpublicであってるんだろうか。
     void setValueArray();
     void setConnectionArray();
-    //void setucd(){} ;
 
 private:
     void check_vtk_data_set_type(vtkUnstructuredGrid* reader);
