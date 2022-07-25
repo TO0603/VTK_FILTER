@@ -39,8 +39,6 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
 
 void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int iblock)
 {
-    //update_cell_type(filterEnsight);
-    //m_cell_type = convert_celltype(filterEnsight.getCellType());  
     
     m_sub_nnodes.at(iblock) =  filterEnsight.getNumberOfNodes();
     m_sub_ncells.at(iblock) =  filterEnsight.getNumberOfElements();
@@ -185,7 +183,6 @@ void CreatePFIFile::write_pfl()
     for (int i = 0; i < 15; i++ )
     {
      if ( m_numarray_celltype[i] == 0) { continue; }
-    //std::string filename = m_out_dir + "/"+ m_basename + ".pfi"; 
     std::string pfiFileName =  std::to_string(i) + "_" + m_file_name + ".pfi";
 
     fprintf(ifs, "%s\n", pfiFileName.c_str() );

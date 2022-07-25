@@ -34,7 +34,6 @@ private:
     int m_cell_type;
     int m_cell_type_index;
     kvs::ValueArray<int> m_numarray_celltype; 
-    //kvs::ValueArray<int> m_sub_array;
     std::string m_file_name;
 
 
@@ -45,12 +44,9 @@ public:
     void update_subvolume( EnsightFormat ensightFormat, const int iblock);
     void write_pfi();
     void write_pfl(); 
-    //int convert_celltype(int celltype);
     void update_cell_type(EnsightFormat ensightFormat);
     void update_member_function(EnsightFormat ensightFormat);
     
-private:
-    //int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);   
 };
 
 #endif // CREATEPFI_H

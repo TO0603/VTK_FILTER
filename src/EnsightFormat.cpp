@@ -223,7 +223,6 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
         for( int j = 0; j < getNumberOfNodes(); j++ )
         {
             float tmp = getValueArray().at(values_index);
-    //std::cout << "tmp_" <<    i   << "_" << j <<  " = " << tmp            << std::endl;
             getMin().at(i) = kvs::Math::Min<float>(getMin().at(i),tmp);
             getMax().at(i) = kvs::Math::Max<float>(getMax().at(i),tmp);
             values_index++;
@@ -261,7 +260,6 @@ int  EnsightFormat::convert_celltype(int cell_type)
     {
         conv_cell = kvsCellType::ElementTypeUnknown; 
     }
-    //return type_num;
     return conv_cell;
 }
 
