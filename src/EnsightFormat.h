@@ -29,7 +29,25 @@ class EnsightFormat
 {
 
 private:
-    //vtkGenericDataObjectReader* m_reader;
+//enum kvsCellType
+//{
+//        Point = 0,                    ///< Point.
+//        Line,                   ///< Line.
+//        Triangle,               ///< Triangle.
+//        Quadrangle,             ///< Quadrangle.
+//        Tetrahedra,             ///< Tetrahedra.
+//        Pyramid,                ///< Pyramid.
+//        Prism,                  ///< Prism.
+//        Hexahedra,              ///< Hexahedra.
+//        Line2,                  ///< Line.
+//        Triangle2,              ///< Triangle2.
+//        Quadrangle2,            ///< Quadrangle2.
+//        Tetrahedra2,            ///< Quadratic tetrahedra.
+//        Pyramid2,               ///< Pyramid.
+//        Prism2,                 ///< Prism.
+//        Hexahedra2,             ///< Quadratic hexahedra.
+//        ElementTypeUnknown ,  ///< Unknown element type.
+//};
     vtkUnstructuredGrid* m_reader;
     //vtkDataSet* m_output;
     vtkMultiBlockDataSet* m_MultiBlockDataSet; 
@@ -51,7 +69,6 @@ private:
     int m_cell_type;
     kvs::ValueArray<int> m_numarray_celltype; 
     kvs::ValueArray<int> id_numarray_celltype; 
-    //int m_numarray_celltype[15];
     int m_block_number;
     int m_total_nodes;
     int m_total_cells;

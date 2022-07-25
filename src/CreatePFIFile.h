@@ -71,11 +71,11 @@ public:
     void write_pfl(); 
     int convert_celltype(int celltype);
     void update_cell_type(EnsightFormat ensightFormat);
+    void update_member_function(EnsightFormat ensightFormat);
     
 private:
      
     //int* getNumArrayCellType() { return m_numarray_celltype; }
-    void update_member_function(EnsightFormat ensightFormat);
     //void convert_celltype();
     int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);   
 };

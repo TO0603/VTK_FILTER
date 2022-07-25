@@ -73,50 +73,12 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     //ntime = 
     //reader -> SetTimeValue(times -> GetTuple1(ntime))
 
-    
-    //debug 
-    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //std::cout <<  std::endl;
-    //vtkDataObject* block = output ->GetBlock(0);
-    //block -> PrintSelf(std::cout, vtkIndent(2));
-    //m_point_data         = block->GetPointData();
-
-    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //std::cout <<  std::endl;
-    //vtkInformation* info = block -> GetInformation();
-    //info -> PrintSelf(std::cout, vtkIndent(2));
-
-    //vtkDataSetAttributes* dataSetPoint = block -> GetAttributes(0); 
-    //std::cout << "debug write  DataSetAttributes" << std::endl;
-    //std::cout <<  std::endl;
-    //dataSetPoint -> PrintSelf(std::cout, vtkIndent(2));
-
-    //vtkFieldData* field = block -> GetFieldData();
-    //std::cout << "debug write field " << std::endl;
-    //std::cout <<  std::endl;
-    //field -> PrintSelf(std::cout, vtkIndent(2));
-
-    ////debug
-    ////std::cout << "debug write unstructuredGrid " << std::endl;
-    //m_coord_array.allocate(24);
-    //m_value_array.allocate(24);
-    //m_connection_array.allocate(20);
-    ////read_vtk_file_parameter(unstructuredGrid);
-    ////read_vtk_file_parameter(m_reader);
 }
 
 void EnsightFormat::read(std::string input_vtk_file, const int i_block)
 //void EnsightFormat::read(std::string input_vtk_file)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-
-    //vtkDataObject* block[m_block_number];
-    //vtkUnstructuredGrid* block[num_blocks];
-    //vtkUnstructuredGridAlgorithm* block[num_blocks];
-    //for (int i = 0; i < m_block_number; i ++)
-    //{
-    //block[i] = output->GetBlock(i);
-    //}
 
     vtkDataObject* block = m_MultiBlockDataSet->GetBlock(i_block);
 
@@ -248,6 +210,10 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     this->setCoordArray();
     this->setValueArray();
     this->setConnectionArray();
+
+    //int tmp_cell_type;
+    //tmp_cell_type = convert_celltype(m_cell_type);
+    //m_cell_type = tmp_cell_type;
 
     int values_index = 0;
     for( int i = 0; i < m_nkinds; i++ )

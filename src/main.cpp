@@ -28,17 +28,17 @@ int main(int argc, char* argv[])
     vtk->setNumberOfBlock(inputFilename);
     int block_number = vtk ->getBlockNumber();
     //int block_number = 1;
-    //int block_number = 18;
     
     CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
-    //std::string kvsml_filename = createPFI->KVSMLFileName(block_number);
 
     for (int i_block = 0; i_block < block_number ; i_block++)
     {
     vtk->read(inputFilename,i_block);
     vtk->generate();
-    vtk->count_numarray_celltype();
+    vtk->count_numarray_celltype(); 
     }
+
+    createPFI-> update_member_function(*vtk);  
 
     for (int i_block = 0; i_block < block_number ; i_block++)
     {
@@ -46,29 +46,10 @@ int main(int argc, char* argv[])
     vtk->generate();
     vtk->count_id_celltype();
 
-    //if(i_block ==0)
-    //{
-    //createPFI -> sub_allocate(*vtk); 
-    //}
     Filter_write* filter_write = new Filter_write(fileName,*vtk,i_block, block_number); 
-    //filter_write->write_kvsml(); 
-    //filter_write->set_filename();
     filter_write->write_kvsml_xmls_single();
     filter_write->write_kvsml_value_single();
     filter_write->write_kvsml_geom();
-    //filter_write->write_pfi();
-    //if(i_block ==0)
-    //{
-    //filter_write->write_pfl(); 
-    //}
-    //kvs::UnstructuredVolumeObject* volume = new SetVolumeObject(*vtk);
-    //filter_write->write_pfi(volume);
-
-//    kvs::KVSMLUnstructuredVolumeObject* kvsml =
-//            new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
-//    kvsml->setWritingDataType( kvs::KVSMLUnstructuredVolumeObject::ExternalBinary );
-//    std::cout << "setWritingDataType " <<std::endl;
-//    kvsml->write(kvsml_filename);
     createPFI -> update_subvolume(*vtk, i_block);
 
     delete filter_write;

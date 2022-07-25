@@ -5,14 +5,6 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
     m_nblocks(filterEnsight.getBlockNumber()),
     m_total_nodes(filterEnsight.getTotalNodes()),
     m_total_cells(filterEnsight.getTotalCells()),
-    //m_total_bounds(filterEnsight.getTotalBounds()),
-    //m_nnodes(filterEnsight.getNumberOfNodes()),
-    //m_ncells(filterEnsight.getNumberOfElements()),
-    //m_nveclen(filterEnsight.getNumberOfKinds()),
-    //m_coord_array(filterEnsight.getCoordArray()),
-    //m_value_array(filterEnsight.getValuewArray()),
-    //m_connection_array(filterEnsight.getConnectionArray()),
-    //m_cell_type(filterEnsight.getCellType()),
     m_nnodes(0),
     m_ncells(0),
     m_nveclen(0),
@@ -49,17 +41,17 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
 void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int iblock)
 {
 
-    if(iblock == 0)
-    {
-        update_member_function(filterEnsight);
-    }
+//    if(iblock == 0)
+//    {
+//        update_member_function(filterEnsight); // get Number Of Kinds & allocate
+//    }
 
     //update_cell_type(filterEnsight);
     m_cell_type = convert_celltype(filterEnsight.getCellType());  
     
     m_sub_nnodes.at(iblock) =  filterEnsight.getNumberOfNodes();
-    //std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
     m_sub_ncells.at(iblock) =  filterEnsight.getNumberOfElements();
+    //std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
     //std::cout << " m_sub_cells = " << m_sub_ncells.at(iblock) <<std::endl; 
     double tmp[6];
     filterEnsight.getUnstructuredGrid() -> GetBounds(tmp);
@@ -92,25 +84,16 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int ibloc
 void CreatePFIFile::update_member_function(EnsightFormat filterEnsight)
 {
     m_nveclen = filterEnsight.getNumberOfKinds();
-    //m_cell_type = filterEnsight.getCellType(); 
     m_sub_value_array.allocate(m_nblocks * m_nveclen * 2) ;
 }
 
-void CreatePFIFile::update_cell_type(EnsightFormat filterEnsight)
-{
-    int tmp_cell_type;
-    tmp_cell_type = convert_celltype(filterEnsight.getCellType());
-
-    //if (!(tmp_cell_type == m_cell_type))
-    //{
-    //   m_numarray_celltype.at(m_cell_type_index) = tmp_cell_type; 
-    //   m_cell_type_index ++;
- 
-    //}
-    m_numarray_celltype.at(tmp_cell_type)  ++;
-    //m_cell_type = tmp_cell_type;
-
-}
+//void CreatePFIFile::update_cell_type(EnsightFormat filterEnsight)
+//{
+//    int tmp_cell_type;
+//    tmp_cell_type = convert_celltype(filterEnsight.getCellType());
+//
+//    m_numarray_celltype.at(tmp_cell_type)  ++;
+//}
 
 int CreatePFIFile::get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType)
 {
@@ -152,9 +135,7 @@ void CreatePFIFile::write_pfi()
 
     for (int i = 0; i < 15; i++ )
     {
-    //tmp_cell_array ++;  
      if ( m_numarray_celltype.at(i) == 0) { continue; }
-    //float gtmp[6 * m_nblocks];
     //std::string filename = m_out_dir + "/"+ m_basename + ".pfi"; 
     std::string pfiFileName = "./out/" + std::to_string(i) + "_" + m_file_name + ".pfi";
     
@@ -165,8 +146,6 @@ void CreatePFIFile::write_pfi()
     std::cout << "volume->minObjectCoord() = " << m_object->minObjectCoord()  << std::endl;
     std::cout << "volume->maxObjectCoord() = " << m_object->maxObjectCoord()  << std::endl;
 #endif
-
-    //m_object -> print(std::cout );
 
     pfi = fopen(pfiFileName.c_str(), "wb");
     //頂点数
@@ -221,128 +200,17 @@ void CreatePFIFile::write_pfi()
     std::cout << "max_y      = " << ftmp[4]           << std::endl;
     std::cout << "max_z      = " << ftmp[5]           << std::endl;
     fwrite(&ftmp, 4, 6, pfi);
-    //for ( i = 0; i< m_nblocks; i++)
-    //{
     //サブボリュームの頂点数
-    //itmp = m_sub_nnodes;
-    //itmp = volume -> nnodes() ;
-    //std::cout << "subvolume_nodes = " << itmp           << std::endl;
-    //fwrite(m_sub_nnodes.pointer(), 4, 1 * m_nblocks, pfi);
     fwrite(m_sub_nnodes.pointer(), 4, 1 * m_numarray_celltype[i], pfi);
     //サブボリュームの要素数
-    //itmp = m_sub_ncells[i];
-    //itmp = volume -> ncells() ;
-    //std::cout << "subvolume_ncell = " << itmp           << std::endl;
-    //fwrite(m_sub_ncells.pointer(), 4, 1 * m_nblocks, pfi);
     fwrite(m_sub_ncells.pointer(), 4, 1 * m_numarray_celltype[i], pfi);
-    //}
-    //for ( i = 0; i< m_nblocks; i++)
-    //{
     //サブボリュームの座標の最大最小値
-    //ftmp[0] = m_object->minObjectCoord().x();
-    //ftmp[1] = m_object->minObjectCoord().y();
-    //ftmp[2] = m_object->minObjectCoord().z();
-    //ftmp[3] = m_object->maxObjectCoord().x();
-    //ftmp[4] = m_object->maxObjectCoord().y();
-    //ftmp[5] = m_object->maxObjectCoord().z();
-    //std::cout << "min_x      = " << ftmp[0]           << std::endl;
-    //std::cout << "min_y      = " << ftmp[1]           << std::endl;
-    //std::cout << "min_z      = " << ftmp[2]           << std::endl;
-    //std::cout << "max_x      = " << ftmp[3]           << std::endl;
-    //std::cout << "max_y      = " << ftmp[4]           << std::endl;
-    //std::cout << "max_z      = " << ftmp[5]           << std::endl;
-    //fwrite(&ftmp, 4, 6, pfi);
-    //}
-    //fwrite(m_sub_coord_array.pointer(), 4, 6*m_nblocks, pfi);
     fwrite(m_sub_coord_array.pointer(), 4, 6*m_numarray_celltype[i], pfi);
     //ステップ1の成分最小値最大値
-
-    //fwrite(m_sub_value_array.pointer(), 4, 1*m_nblocks, pfi);
     fwrite(m_sub_value_array.pointer(), 4, 1*m_numarray_celltype[i], pfi);
-
-    //ステップ1の成分最小値
-    ////itmp = 1;
-    //itmp = m_object -> minValue();
-    //fwrite(&itmp, 4, 1, pfi);
-    ////ステップ1の成分最大値
-    ////itmp = 5;
-    //itmp = m_object -> maxValue();
-    //std::cout << "max             = " << itmp  <<std::endl;
-    //fwrite(&itmp, 4, 1, pfi);
     fclose(pfi);
-
     } //end loop m_numarray_celltype
     
-}
-
-void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
-{
-    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    FILE *pfi = NULL;
-    int itmp;
-    float ftmp[6];
-    std::string pfiFileName = "./out/" + m_file_name + ".pfi";
-    //int 
-
-#ifdef VALUE_DEBUG
-    std::cout << "m_nnodes                 = " << m_nnodes                  << std::endl;
-    std::cout << "m_ncells                 = " << m_ncells                  << std::endl;
-    std::cout << "m_nveclen                = " << m_nveclen                 << std::endl;
-    std::cout << "volume->minObjectCoord() = " << volume->minObjectCoord()  << std::endl;
-    std::cout << "volume->maxObjectCoord() = " << volume->maxObjectCoord()  << std::endl;
-#endif
-
-    pfi = fopen(pfiFileName.c_str(), "wb");
-    //頂点数
-    itmp = m_nnodes;
-    fwrite(&itmp, 4, 1, pfi);
-    //要素数
-    itmp = m_ncells;
-    fwrite(&itmp, 4, 1, pfi);
-    //要素タイプ
-    itmp = get_pfi_unstructured_cell_type(volume->cellType());
-    fwrite(&itmp, 4, 1, pfi);
-    //ファイルタイプ
-    itmp = 0;
-    fwrite(&itmp, 4, 1, pfi);
-    //ファイル数
-    itmp = 0;
-    fwrite(&itmp, 4, 1, pfi);
-    //成分数(ベクトル?)
-    itmp = m_nveclen;
-    fwrite(&itmp, 4, 1, pfi);
-    //開始ステップ
-    itmp = 0;
-    fwrite(&itmp, 4, 1, pfi);
-    //終了ステップ
-    itmp = 0;
-    fwrite(&itmp, 4, 1, pfi);
-    //サブボリューム数
-    itmp = 1;
-    fwrite(&itmp, 4, 1, pfi);
-    //座標の最大最小値
-    ftmp[0] = volume->minObjectCoord().x();
-    ftmp[1] = volume->minObjectCoord().y();
-    ftmp[2] = volume->minObjectCoord().z();
-    ftmp[3] = volume->maxObjectCoord().x();
-    ftmp[4] = volume->maxObjectCoord().y();
-    ftmp[5] = volume->maxObjectCoord().z();
-    fwrite(&ftmp, 4, 6, pfi);
-    //サブボリュームの頂点数
-    itmp = m_nnodes;
-    fwrite(&itmp, 4, 1, pfi);
-    //サブボリュームの要素数
-    itmp = m_ncells;
-    fwrite(&itmp, 4, 1, pfi);
-    //サブボリュームの座標の最大最小値
-    fwrite(&ftmp, 4, 6, pfi);
-    //ステップ1の成分最小値
-    itmp = 1;
-    fwrite(&itmp, 4, 1, pfi);
-    //ステップ1の成分最大値
-    itmp = 5;
-    fwrite(&itmp, 4, 1, pfi);
-    fclose(pfi);
 }
 
 //void CreatePFIFile::convert_celltype()
