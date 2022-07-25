@@ -49,6 +49,9 @@ private:
     int m_nkinds;
     int m_npoints;
     int m_cell_type;
+    kvs::ValueArray<int> m_numarray_celltype; 
+    kvs::ValueArray<int> id_numarray_celltype; 
+    //int m_numarray_celltype[15];
     int m_block_number;
     int m_total_nodes;
     int m_total_cells;
@@ -65,11 +68,14 @@ public:
     void read(std::string input_vtk_file, const int i);
     void generate();
     void show_memory();
+    void count_numarray_celltype();
     long long getNumberOfNodes() { return m_nnodes; }
     long long getNumberOfElements() { return m_nelements; }
     int getNumberOfKinds() { return m_nkinds; }
     int getNumberOfPoints() { return m_npoints; }
     int getCellType() { return m_cell_type; }
+    kvs::ValueArray<int> getNumArrayCellType() { return m_numarray_celltype; }
+    kvs::ValueArray<int> getIdNumArrayCellType() { return id_numarray_celltype; }
     int getBlockNumber() { return m_block_number; }
     int getTotalNodes() { return m_total_nodes; }
     int getTotalCells() { return m_total_cells; }
@@ -85,6 +91,7 @@ public:
     void setNumberOfKinds(int nkinds) { m_nkinds = nkinds; }
     void setNumberOfPoints(int npoints) {  m_npoints = npoints; }
     void setCellType(int cell_type) {  m_cell_type = cell_type; }
+    void count_id_celltype();
 
     kvs::ValueArray<kvs::Real32> getCoordArray() { return m_coord_array; }
     kvs::ValueArray<kvs::Real32> getValuewArray() { return m_value_array; }
@@ -94,6 +101,7 @@ public:
     void setConnectionArray();
 
 private:
+    int convert_celltype(int cell_type);
     void check_vtk_data_set_type(vtkUnstructuredGrid* reader);
     void read_vtk_file_parameter(vtkUnstructuredGrid* reader);
 };

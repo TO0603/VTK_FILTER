@@ -18,6 +18,15 @@ EnsightFormat::EnsightFormat():
     m_block_number(0)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    m_numarray_celltype.allocate(15);
+    id_numarray_celltype.allocate(15);
+    //for (auto i: m_numarray_celltype)
+    for (int i =0 ; i < 15; i++)
+    {
+        m_numarray_celltype.at(i) = 0;
+        id_numarray_celltype.at(i) = 0;
+//        std::cout << "m_numarray_celltype = "<< i <<std::endl;
+    }
 }
 
 void EnsightFormat::show_memory()
@@ -43,7 +52,7 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     m_block_number =  output -> GetNumberOfBlocks(); 
     m_total_nodes  =  output -> GetNumberOfPoints();
     m_total_cells  =  output -> GetNumberOfCells(); 
-    reader->PrintSelf(std::cout, vtkIndent(2));
+    //reader->PrintSelf(std::cout, vtkIndent(2));
     //reader->PrintSelf(std::cout, vtkIndent(2));
     //output->PrintSelf(std::cout, vtkIndent(2));
 
@@ -86,29 +95,6 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     //std::cout << "debug write field " << std::endl;
     //std::cout <<  std::endl;
     //field -> PrintSelf(std::cout, vtkIndent(2));
-
-    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //std::cout << "append"  << std::endl;
-    //vtkNew<vtkAppendFilter> append;   
-    //append -> PrintSelf(std::cout, vtkIndent(2));
-    //append->AddInputData(block);
-    //append->Update();
-    //
-    //std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    //std::cout << "ugalg"  << std::endl;
-    //vtkSmartPointer<vtkUnstructuredGridAlgorithm> ugAlgorithm = vtkUnstructuredGridAlgorithm::New();   
-    //vtkNew<vtkUnstructuredGridAlgorithm> ugAlgorithm;
-    //ugAlgorithm -> PrintSelf(std::cout, vtkIndent(2));
-    //ugAlgorithm->AddInputData(0,block);
-    //ugAlgorithm->Update();
-
-    //vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
-    ////unstructuredGrid = unstructuredGrid -> SafeDownCast(block); 
-    //unstructuredGrid = dynamic_cast<vtkUnstructuredGrid *>(block);
-    ////m_reader = vtkUnstructuredGrid::New();
-    ////unstructuredGrid->ShallowCopy(append->GetOutput());       
-    ////unstructuredGrid->ShallowCopy(ugAlgorithm->GetOutput());       
-    //m_reader = unstructuredGrid;
 
     ////debug
     ////std::cout << "debug write unstructuredGrid " << std::endl;
@@ -245,7 +231,7 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     m_min.allocate( m_nkinds );
     m_max.allocate( m_nkinds );
 
-//#ifdef VALUE_DEBUG
+#ifdef VALUE_DEBUG
     std::cout << "m_npoint_data_arrays     = " << m_npoint_data_arrays     << std::endl;
     std::cout << "m_npoint_data_components = " << m_npoint_data_components << std::endl;
     std::cout << "m_npoint_data_tuples     = " << m_npoint_data_tuples     << std::endl;
@@ -257,7 +243,7 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     std::cout << "m_nkinds                 = " << m_nkinds                 << std::endl;
     std::cout << "m_npoints                = " << m_npoints                << std::endl;
     std::cout << "m_value_array.size()      = " << m_value_array.size()      << std::endl;
-//#endif
+#endif
 
     this->setCoordArray();
     this->setValueArray();
@@ -276,8 +262,62 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
             getMax().at(i) = kvs::Math::Max<float>(getMax().at(i),tmp);
             values_index++;
         }
-    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
-    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
+//    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
+//    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
     }  
+}
 
+void EnsightFormat::count_numarray_celltype()
+{
+    int tmp_cell_type;
+    tmp_cell_type = convert_celltype(getCellType());
+    m_numarray_celltype.at(tmp_cell_type) ++;
+}
+
+
+int  EnsightFormat::convert_celltype(int cell_type)
+{
+    //kvsCellType conv_cell;
+    int type_num;
+    if(cell_type == 10) // tetrahedra
+    {
+        //conv_cell = kvsCellType::Tetrahedra;
+        type_num = 4;
+        std::cout<< "conv_cell = " << type_num << std::endl;
+    }
+    else  if(cell_type == 5)  // triangle
+    {
+        //conv_cell = kvsCellType::Triangle;
+        //type_num = 3;
+        type_num = 2;
+    }
+    else if(cell_type == 12) // hexahedra
+    {
+        //conv_cell = kvsCellType::Hexahedra;
+        type_num = 8;
+    }
+    else if(cell_type == 13) // Prism
+    {
+        //conv_cell = kvsCellType::Prism;
+        type_num = 6;
+    }
+    else if(cell_type == 14) // Pyramid
+    {
+        //conv_cell = kvsCellType::Pyramid;
+        type_num = 5;
+    }
+    else 
+    {
+        //conv_cell = kvsCellType::ElementTypeUnknown; 
+        type_num = 0;
+    }
+    //m_cell_type = conv_cell; 
+    return type_num;
+}
+
+void  EnsightFormat::count_id_celltype()
+{
+    int tmp_cell_type;
+    tmp_cell_type = convert_celltype(m_cell_type);
+    id_numarray_celltype.at(tmp_cell_type) ++; 
 }

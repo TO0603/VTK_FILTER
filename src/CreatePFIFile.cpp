@@ -35,9 +35,15 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
     //std::cout << "m_cell_type = " << m_cell_type << std::endl;
     m_sub_nnodes.allocate(m_nblocks);
     m_sub_ncells.allocate(m_nblocks);
-    m_sub_coord_array.allocate(m_nblocks*6);
+    m_sub_coord_array.allocate(m_nblocks * 6);
     filterEnsight.getMultiBlockDataSet() -> GetBounds(m_total_bounds) ; 
-    m_cell_type_array.allocate(8);
+    m_numarray_celltype.allocate(15);
+    m_numarray_celltype = filterEnsight.getNumArrayCellType();    
+    for (int i = 0; i< 15; i++)
+    {
+    //    m_numarray_celltype.at(i) = 0;
+        std::cout << "m_numarray_celltype = "<< m_numarray_celltype.at(i) <<std::endl;
+    }
 }
 
 void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int iblock)
@@ -48,11 +54,13 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int ibloc
         update_member_function(filterEnsight);
     }
 
-    update_cell_type(filterEnsight);
+    //update_cell_type(filterEnsight);
+    m_cell_type = convert_celltype(filterEnsight.getCellType());  
+    
     m_sub_nnodes.at(iblock) =  filterEnsight.getNumberOfNodes();
-    std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
+    //std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
     m_sub_ncells.at(iblock) =  filterEnsight.getNumberOfElements();
-    std::cout << " m_sub_cells = " << m_sub_ncells.at(iblock) <<std::endl; 
+    //std::cout << " m_sub_cells = " << m_sub_ncells.at(iblock) <<std::endl; 
     double tmp[6];
     filterEnsight.getUnstructuredGrid() -> GetBounds(tmp);
 
@@ -65,10 +73,10 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight,const int ibloc
     m_sub_coord_array.at(4 + iblock*6) = tmp[3];
     m_sub_coord_array.at(5 + iblock*6) = tmp[5];
 
-    for (auto i: tmp)
-    {
-        std::cout << " tmp =  " << i <<std::endl;
-    }
+//    for (auto i: tmp)
+//    {
+//        std::cout << " tmp =  " << i <<std::endl;
+//    }
 
     m_min = filterEnsight.getMin();
     m_max = filterEnsight.getMax();
@@ -93,13 +101,14 @@ void CreatePFIFile::update_cell_type(EnsightFormat filterEnsight)
     int tmp_cell_type;
     tmp_cell_type = convert_celltype(filterEnsight.getCellType());
 
-    if (!(tmp_cell_type == m_cell_type))
-    {
-       m_cell_type_array.at(m_cell_type_index) = tmp_cell_type; 
-       m_cell_type_index ++;
+    //if (!(tmp_cell_type == m_cell_type))
+    //{
+    //   m_numarray_celltype.at(m_cell_type_index) = tmp_cell_type; 
+    //   m_cell_type_index ++;
  
-    }
-    m_cell_type = tmp_cell_type;
+    //}
+    m_numarray_celltype.at(tmp_cell_type)  ++;
+    //m_cell_type = tmp_cell_type;
 
 }
 
@@ -134,10 +143,21 @@ void CreatePFIFile::write_pfi()
     FILE *pfi = NULL;
     int itmp;
     float ftmp[6];
+    int tmp_cell_type = 0;
+
+    for (auto i: m_numarray_celltype)
+    {
+        std::cout << "m_numarray_celltype = "<< i <<std::endl;
+    }
+
+    for (int i = 0; i < 15; i++ )
+    {
+    //tmp_cell_array ++;  
+     if ( m_numarray_celltype.at(i) == 0) { continue; }
     //float gtmp[6 * m_nblocks];
     //std::string filename = m_out_dir + "/"+ m_basename + ".pfi"; 
-    std::string pfiFileName = "./out/" + m_file_name + ".pfi";
-
+    std::string pfiFileName = "./out/" + std::to_string(i) + "_" + m_file_name + ".pfi";
+    
 #ifdef VALUE_DEBUG
     std::cout << "m_nnodes                 = " << m_nnodes                  << std::endl;
     std::cout << "m_ncells                 = " << m_ncells                  << std::endl;
@@ -158,8 +178,8 @@ void CreatePFIFile::write_pfi()
     fwrite(&itmp, 4, 1, pfi);
     std::cout << "ncells          = " << itmp           << std::endl;
     //要素タイプ
-    //convert_celltype();
-    itmp = m_cell_type;
+    //itmp = m_cell_type;
+    itmp = i;
     std::cout << "m_cell_type     = " << itmp           << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //ファイルタイプ
@@ -183,7 +203,8 @@ void CreatePFIFile::write_pfi()
     std::cout << "end_time        = " << itmp           << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //サブボリューム数
-    itmp = m_nblocks;
+    //itmp = m_nblocks;
+    itmp = m_numarray_celltype[i];
     std::cout << "nsubvolume      = " << itmp           << std::endl;
     fwrite(&itmp, 4, 1, pfi);
     //座標の最大最小値
@@ -206,12 +227,14 @@ void CreatePFIFile::write_pfi()
     //itmp = m_sub_nnodes;
     //itmp = volume -> nnodes() ;
     //std::cout << "subvolume_nodes = " << itmp           << std::endl;
-    fwrite(m_sub_nnodes.pointer(), 4, 1 * m_nblocks, pfi);
+    //fwrite(m_sub_nnodes.pointer(), 4, 1 * m_nblocks, pfi);
+    fwrite(m_sub_nnodes.pointer(), 4, 1 * m_numarray_celltype[i], pfi);
     //サブボリュームの要素数
     //itmp = m_sub_ncells[i];
     //itmp = volume -> ncells() ;
     //std::cout << "subvolume_ncell = " << itmp           << std::endl;
-    fwrite(m_sub_ncells.pointer(), 4, 1 * m_nblocks, pfi);
+    //fwrite(m_sub_ncells.pointer(), 4, 1 * m_nblocks, pfi);
+    fwrite(m_sub_ncells.pointer(), 4, 1 * m_numarray_celltype[i], pfi);
     //}
     //for ( i = 0; i< m_nblocks; i++)
     //{
@@ -230,10 +253,12 @@ void CreatePFIFile::write_pfi()
     //std::cout << "max_z      = " << ftmp[5]           << std::endl;
     //fwrite(&ftmp, 4, 6, pfi);
     //}
-    fwrite(m_sub_coord_array.pointer(), 4, 6*m_nblocks, pfi);
+    //fwrite(m_sub_coord_array.pointer(), 4, 6*m_nblocks, pfi);
+    fwrite(m_sub_coord_array.pointer(), 4, 6*m_numarray_celltype[i], pfi);
     //ステップ1の成分最小値最大値
 
-    fwrite(m_sub_value_array.pointer(), 4, 1*m_nblocks, pfi);
+    //fwrite(m_sub_value_array.pointer(), 4, 1*m_nblocks, pfi);
+    fwrite(m_sub_value_array.pointer(), 4, 1*m_numarray_celltype[i], pfi);
 
     //ステップ1の成分最小値
     ////itmp = 1;
@@ -245,6 +270,9 @@ void CreatePFIFile::write_pfi()
     //std::cout << "max             = " << itmp  <<std::endl;
     //fwrite(&itmp, 4, 1, pfi);
     fclose(pfi);
+
+    } //end loop m_numarray_celltype
+    
 }
 
 void CreatePFIFile::createPFIFile(kvs::UnstructuredVolumeObject* volume)
@@ -357,5 +385,29 @@ int  CreatePFIFile::convert_celltype(int cell_type)
     //m_cell_type = conv_cell; 
     return conv_cell;
 }
+
+void CreatePFIFile::write_pfl()
+{
+    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    FILE *ifs = NULL;
+
+    std::string filename;    
+    std::string pfi_filename;
+    filename = "./out/" +  m_file_name + ".pfl"; 
+
+    ifs = fopen(filename.c_str(), "w"); 
+    fprintf(ifs, "#PBVR PFI FILES\n");
+
+    for (int i = 0; i < 15; i++ )
+    {
+     if ( m_numarray_celltype[i] == 0) { continue; }
+    //std::string filename = m_out_dir + "/"+ m_basename + ".pfi"; 
+    std::string pfiFileName =  std::to_string(i) + "_" + m_file_name + ".pfi";
+
+    fprintf(ifs, "%s\n", pfiFileName.c_str() );
+    }
+    fclose(ifs);
+}
+
 
 
