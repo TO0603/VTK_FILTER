@@ -14,26 +14,6 @@ class CreatePFIFile
 {
 
 private:
-enum kvsCellType
-{
-        Point = 0,                    ///< Point.
-        Line,                   ///< Line.
-        Triangle,               ///< Triangle.
-        Quadrangle,             ///< Quadrangle.
-        Tetrahedra,             ///< Tetrahedra.
-        Pyramid,                ///< Pyramid.
-        Prism,                  ///< Prism.
-        Hexahedra,              ///< Hexahedra.
-        Line2,                  ///< Line.
-        Triangle2,              ///< Triangle2.
-        Quadrangle2,            ///< Quadrangle2.
-        Tetrahedra2,            ///< Quadratic tetrahedra.
-        Pyramid2,               ///< Pyramid.
-        Prism2,                 ///< Prism.
-        Hexahedra2,             ///< Quadratic hexahedra.
-        ElementTypeUnknown ,  ///< Unknown element type.
-};
-
     EnsightFormat m_Ensight;
     int m_nblocks;
     int m_total_nodes;
@@ -53,31 +33,24 @@ enum kvsCellType
     kvs::ValueArray<kvs::UInt32> m_connection_array;
     int m_cell_type;
     int m_cell_type_index;
-    //int** m_numarray_celltype;
-    //std::vector<int>* m_numarray_celltype;
     kvs::ValueArray<int> m_numarray_celltype; 
-    //kvs::ValueArray<int> m_numarray_celltype[10];
     //kvs::ValueArray<int> m_sub_array;
     std::string m_file_name;
 
 
 public:
     CreatePFIFile(std::string fileName,EnsightFormat vtk_parameter_reader);
-    //std::string KVSMLFileName(const int i_block) { return "./out/" + m_file_name + "_00000_0000001_" + std::to_string(i_block) + ".kvsml"; }
     void setFileName(std::string file_name) { m_file_name = file_name; } //?
     void createPFIFile(kvs::UnstructuredVolumeObject*);
     void update_subvolume( EnsightFormat ensightFormat, const int iblock);
     void write_pfi();
     void write_pfl(); 
-    int convert_celltype(int celltype);
+    //int convert_celltype(int celltype);
     void update_cell_type(EnsightFormat ensightFormat);
     void update_member_function(EnsightFormat ensightFormat);
     
 private:
-     
-    //int* getNumArrayCellType() { return m_numarray_celltype; }
-    //void convert_celltype();
-    int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);   
+    //int get_pfi_unstructured_cell_type(kvs::UnstructuredVolumeObject::CellType kvs_cellType);   
 };
 
 #endif // CREATEPFI_H

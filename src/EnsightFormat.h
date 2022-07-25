@@ -29,25 +29,25 @@ class EnsightFormat
 {
 
 private:
-//enum kvsCellType
-//{
-//        Point = 0,                    ///< Point.
-//        Line,                   ///< Line.
-//        Triangle,               ///< Triangle.
-//        Quadrangle,             ///< Quadrangle.
-//        Tetrahedra,             ///< Tetrahedra.
-//        Pyramid,                ///< Pyramid.
-//        Prism,                  ///< Prism.
-//        Hexahedra,              ///< Hexahedra.
-//        Line2,                  ///< Line.
-//        Triangle2,              ///< Triangle2.
-//        Quadrangle2,            ///< Quadrangle2.
-//        Tetrahedra2,            ///< Quadratic tetrahedra.
-//        Pyramid2,               ///< Pyramid.
-//        Prism2,                 ///< Prism.
-//        Hexahedra2,             ///< Quadratic hexahedra.
-//        ElementTypeUnknown ,  ///< Unknown element type.
-//};
+enum kvsCellType
+{
+        Point = 0,                    ///< Point.
+        Line,                   ///< Line.
+        Triangle,               ///< Triangle.
+        Quadrangle,             ///< Quadrangle.
+        Tetrahedra,             ///< Tetrahedra.
+        Pyramid,                ///< Pyramid.
+        Prism,                  ///< Prism.
+        Hexahedra,              ///< Hexahedra.
+        Line2,                  ///< Line.
+        Triangle2,              ///< Triangle2.
+        Quadrangle2,            ///< Quadrangle2.
+        Tetrahedra2,            ///< Quadratic tetrahedra.
+        Pyramid2,               ///< Pyramid.
+        Prism2,                 ///< Prism.
+        Hexahedra2,             ///< Quadratic hexahedra.
+        ElementTypeUnknown ,  ///< Unknown element type.
+};
     vtkUnstructuredGrid* m_reader;
     //vtkDataSet* m_output;
     vtkMultiBlockDataSet* m_MultiBlockDataSet; 
@@ -85,6 +85,7 @@ public:
     void read(std::string input_vtk_file, const int i);
     void generate();
     void show_memory();
+    void check_ensight_data_cell_type();
     void count_numarray_celltype();
     long long getNumberOfNodes() { return m_nnodes; }
     long long getNumberOfElements() { return m_nelements; }
@@ -119,7 +120,6 @@ public:
 
 private:
     int convert_celltype(int cell_type);
-    void check_vtk_data_set_type(vtkUnstructuredGrid* reader);
     void read_vtk_file_parameter(vtkUnstructuredGrid* reader);
 };
 

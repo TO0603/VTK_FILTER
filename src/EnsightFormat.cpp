@@ -20,12 +20,10 @@ EnsightFormat::EnsightFormat():
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     m_numarray_celltype.allocate(15);
     id_numarray_celltype.allocate(15);
-    //for (auto i: m_numarray_celltype)
     for (int i =0 ; i < 15; i++)
     {
         m_numarray_celltype.at(i) = 0;
         id_numarray_celltype.at(i) = 0;
-//        std::cout << "m_numarray_celltype = "<< i <<std::endl;
     }
 }
 
@@ -63,9 +61,7 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
         std::cout << " bounds =  " << i <<std::endl;
     }
 
-    //m_MultiBlockDataSet = vtkMultiBlockDataSet::New();
     m_MultiBlockDataSet = output;
-    //m_MultiBlockDataSet -> ShallowCopy(output);
     std::cout << "num_blocks = " << m_block_number << std::endl; 
 
     //// get time
@@ -84,8 +80,6 @@ void EnsightFormat::read(std::string input_vtk_file, const int i_block)
 
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
     unstructuredGrid = dynamic_cast<vtkUnstructuredGrid *>(block);
-    //m_reader = vtkUnstructuredGrid::New();
-    //unstructuredGrid->ShallowCopy(append->GetOutput());       
     m_reader = unstructuredGrid;
 
 }
@@ -101,7 +95,6 @@ void EnsightFormat::setCoordArray()
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     for( int i = 0; i < m_nnodes; i++ )
     {
-        //double* point = m_output->GetPoint(i);
         double* point = m_reader->GetPoint(i);
         m_coord_array[i * 3] = point[0];
         m_coord_array[i * 3 + 1] = point[1];
@@ -166,10 +159,17 @@ void EnsightFormat::setConnectionArray()
 }
 
 
-void EnsightFormat::check_vtk_data_set_type(vtkUnstructuredGrid *reader)
+void EnsightFormat::check_ensight_data_cell_type()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    read_vtk_file_parameter(reader);
+    m_nelements                       = m_reader->GetNumberOfCells();
+    vtkCell* element = m_reader->GetCell(m_nelements - 1);
+    m_cell_type = element->GetCellType();
+    
+    int tmp_cell_type;
+    tmp_cell_type = convert_celltype(m_cell_type);
+    m_cell_type = tmp_cell_type;
+    m_numarray_celltype.at(m_cell_type) ++;
 }
 
 void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
@@ -211,9 +211,9 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     this->setValueArray();
     this->setConnectionArray();
 
-    //int tmp_cell_type;
-    //tmp_cell_type = convert_celltype(m_cell_type);
-    //m_cell_type = tmp_cell_type;
+    int tmp_cell_type;
+    tmp_cell_type = convert_celltype(m_cell_type);
+    m_cell_type = tmp_cell_type;
 
     int values_index = 0;
     for( int i = 0; i < m_nkinds; i++ )
@@ -233,57 +233,44 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
     }  
 }
 
-void EnsightFormat::count_numarray_celltype()
-{
-    int tmp_cell_type;
-    tmp_cell_type = convert_celltype(getCellType());
-    m_numarray_celltype.at(tmp_cell_type) ++;
-}
-
-
 int  EnsightFormat::convert_celltype(int cell_type)
 {
-    //kvsCellType conv_cell;
-    int type_num;
+    kvsCellType conv_cell;
     if(cell_type == 10) // tetrahedra
     {
-        //conv_cell = kvsCellType::Tetrahedra;
-        type_num = 4;
-        std::cout<< "conv_cell = " << type_num << std::endl;
+        conv_cell = kvsCellType::Tetrahedra;
+        std::cout<< "conv_cell = " << conv_cell << std::endl;
     }
     else  if(cell_type == 5)  // triangle
     {
-        //conv_cell = kvsCellType::Triangle;
-        //type_num = 3;
-        type_num = 2;
+        conv_cell = kvsCellType::Triangle;
     }
     else if(cell_type == 12) // hexahedra
     {
-        //conv_cell = kvsCellType::Hexahedra;
-        type_num = 8;
+        conv_cell = kvsCellType::Hexahedra;
     }
     else if(cell_type == 13) // Prism
     {
-        //conv_cell = kvsCellType::Prism;
-        type_num = 6;
+        conv_cell = kvsCellType::Prism;
     }
     else if(cell_type == 14) // Pyramid
     {
-        //conv_cell = kvsCellType::Pyramid;
-        type_num = 5;
+        conv_cell = kvsCellType::Pyramid;
     }
     else 
     {
-        //conv_cell = kvsCellType::ElementTypeUnknown; 
-        type_num = 0;
+        conv_cell = kvsCellType::ElementTypeUnknown; 
     }
-    //m_cell_type = conv_cell; 
-    return type_num;
+    //return type_num;
+    return conv_cell;
+}
+
+void EnsightFormat::count_numarray_celltype()
+{
+    m_numarray_celltype.at(m_cell_type) ++;
 }
 
 void  EnsightFormat::count_id_celltype()
 {
-    int tmp_cell_type;
-    tmp_cell_type = convert_celltype(m_cell_type);
-    id_numarray_celltype.at(tmp_cell_type) ++; 
+    id_numarray_celltype.at(m_cell_type) ++; 
 }

@@ -29,15 +29,15 @@ int main(int argc, char* argv[])
     int block_number = vtk ->getBlockNumber();
     //int block_number = 1;
     
-    CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
-
     for (int i_block = 0; i_block < block_number ; i_block++)
     {
     vtk->read(inputFilename,i_block);
     vtk->generate();
     vtk->count_numarray_celltype(); 
+    //vtk->check_ensight_data_cell_type(); 
     }
 
+    CreatePFIFile *createPFI = new CreatePFIFile(fileName,*vtk);
     createPFI-> update_member_function(*vtk);  
 
     for (int i_block = 0; i_block < block_number ; i_block++)
