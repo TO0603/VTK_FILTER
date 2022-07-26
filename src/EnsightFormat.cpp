@@ -182,7 +182,11 @@ void EnsightFormat::setConnectionArray()
 void EnsightFormat::check_ensight_data_cell_type()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    m_npoint_data_components          = m_reader -> GetPointData() ->GetNumberOfComponents();
+    m_ncell_data_components           = m_reader -> GetCellData()  ->GetNumberOfComponents();
     m_nelements                       = m_reader->GetNumberOfCells();
+    m_nkinds                          = m_npoint_data_components + m_ncell_data_components;
+    
     vtkCell* element = m_reader->GetCell(m_nelements - 1);
     m_cell_type = element->GetCellType();
 
@@ -190,6 +194,11 @@ void EnsightFormat::check_ensight_data_cell_type()
     tmp_cell_type = convert_celltype(m_cell_type);
     m_cell_type = tmp_cell_type;
     m_numarray_celltype.at(m_cell_type) ++;
+    //for (auto i: m_numarray_celltype)
+    //{
+    //    std::cout << "m_numarray_celltype = "<< i <<std::endl;
+    //}
+
 }
 
 void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
@@ -286,6 +295,7 @@ int  EnsightFormat::convert_celltype(int cell_type)
 void EnsightFormat::count_numarray_celltype()
 {
     m_numarray_celltype.at(m_cell_type) ++;
+
 }
 
 void  EnsightFormat::count_id_celltype()

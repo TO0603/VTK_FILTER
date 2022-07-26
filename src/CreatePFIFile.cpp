@@ -91,12 +91,12 @@ void CreatePFIFile::write_pfi()
     int itmp;
     float ftmp[6];
 
-#ifdef VALUE_DEBUG
+//#ifdef VALUE_DEBUG
     for (auto i: m_numarray_celltype)
     {
         std::cout << "m_numarray_celltype = "<< i <<std::endl;
     }
-#endif
+//#endif
 
     for (int i = 0; i < 15; i++ )
     {

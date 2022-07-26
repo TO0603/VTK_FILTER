@@ -33,9 +33,9 @@ int main(int argc, char* argv[])
     for (int i_block = 0; i_block < block_number ; i_block++)
     {
         ens->read(inputFilename, i_block, 0);
-        ens->generate();
-        ens->count_numarray_celltype(); 
-        //ens->check_ensight_data_cell_type(); 
+        //ens->generate();
+        //ens->count_numarray_celltype(); 
+        ens->check_ensight_data_cell_type(); 
     }
 
     CreatePFIFile *createPFI = new CreatePFIFile(fileName, *ens);
