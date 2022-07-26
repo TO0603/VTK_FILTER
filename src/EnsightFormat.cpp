@@ -36,25 +36,22 @@ void EnsightFormat::show_memory()
     std::cout << "CPU mem usage: ru_maxrss = " << (double)usage.ru_maxrss/1024./1024. << " MB" << std::endl; // ru_maxrss is in unit KB
 }
 
-void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
+void EnsightFormat::setNumberOfBlock(std::string input_ensight_file)
 {
-    std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    vtkSmartPointer<vtkEnSightGoldBinaryReader> reader = vtkEnSightGoldBinaryReader::New();
 
-    reader->SetCaseFileName(input_vtk_file.c_str());
-    reader->ReadAllVariablesOn(); 
+    m_EnSightGoldBinaryReader = vtkEnSightGoldBinaryReader::New();
+    m_EnSightGoldBinaryReader->SetCaseFileName(input_ensight_file.c_str());
+    m_EnSightGoldBinaryReader->ReadAllVariablesOn(); 
     show_memory();
-    reader->Update();
+    m_EnSightGoldBinaryReader->Update();
     show_memory();
-    vtkMultiBlockDataSet*  output = reader->GetOutput(); 
+
+    vtkMultiBlockDataSet*  output = m_EnSightGoldBinaryReader->GetOutput(); 
+    //vtkMultiBlockDataSet*  output = reader->GetOutput(); 
     m_block_number =  output -> GetNumberOfBlocks(); 
     m_total_nodes  =  output -> GetNumberOfPoints();
     m_total_cells  =  output -> GetNumberOfCells(); 
-    //reader->PrintSelf(std::cout, vtkIndent(2));
-    //reader->PrintSelf(std::cout, vtkIndent(2));
-    //output->PrintSelf(std::cout, vtkIndent(2));
 
-    //double bounds[6];
     output -> GetBounds(m_total_bounds);
     for (auto i: m_total_bounds)
     {
@@ -64,19 +61,42 @@ void EnsightFormat::setNumberOfBlock(std::string input_vtk_file)
     m_MultiBlockDataSet = output;
     std::cout << "num_blocks = " << m_block_number << std::endl; 
 
-    //// get time
-    //m_DataArray -> reader -> GetTimeSets() -> GetItem(0);
-    //ntime = 
-    //reader -> SetTimeValue(times -> GetTuple1(ntime))
+#ifdef VALUE_DEBUG
+    m_EnSightGoldBinaryReader->PrintSelf(std::cout, vtkIndent(2));
+    output->PrintSelf(std::cout, vtkIndent(2));
+    m_DataArrayCollection = m_EnSightGoldBinaryReader -> GetTimeSets();
+    m_DataArrayCollection -> PrintSelf(std::cout, vtkIndent(2));
+#endif
+
+    // get time
+    m_items = m_EnSightGoldBinaryReader -> GetTimeSets() -> GetNumberOfItems ();
+    if (m_items == 0)
+    {
+        m_timesteps = 1;
+    }
+    else
+    {
+        m_DataArray = m_EnSightGoldBinaryReader -> GetTimeSets() -> GetItem(0);
+        m_DataArray -> PrintSelf(std::cout, vtkIndent(2));
+        m_timesteps = m_DataArray -> GetSize(); 
+
+#ifdef VALUE_DEBUG
+        std::cout << "m_timesteps =" << m_timesteps << std::endl;
+        m_time = m_DataArray ->GetTuple1(1) ;
+        std::cout << "m_time =" << m_time << std::endl;
+#endif
+    }
 
 }
 
-void EnsightFormat::read(std::string input_vtk_file, const int i_block)
-//void EnsightFormat::read(std::string input_vtk_file)
+void EnsightFormat::read(std::string input_vtk_file, const int i_block, const int i_step)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
 
-    vtkDataObject* block = m_MultiBlockDataSet->GetBlock(i_block);
+    m_EnSightGoldBinaryReader -> SetTimeValue(m_DataArray -> GetTuple1(i_step));
+    m_EnSightGoldBinaryReader -> Update();
+    vtkDataObject* block = m_EnSightGoldBinaryReader -> GetOutput() -> GetBlock(i_block);
+    //vtkDataObject* block = m_MultiBlockDataSet->GetBlock(i_block);
 
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
     unstructuredGrid = dynamic_cast<vtkUnstructuredGrid *>(block);
@@ -165,7 +185,7 @@ void EnsightFormat::check_ensight_data_cell_type()
     m_nelements                       = m_reader->GetNumberOfCells();
     vtkCell* element = m_reader->GetCell(m_nelements - 1);
     m_cell_type = element->GetCellType();
-    
+
     int tmp_cell_type;
     tmp_cell_type = convert_celltype(m_cell_type);
     m_cell_type = tmp_cell_type;
@@ -227,8 +247,8 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
             getMax().at(i) = kvs::Math::Max<float>(getMax().at(i),tmp);
             values_index++;
         }
-//    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
-//    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
+        //    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
+        //    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
     }  
 }
 
@@ -270,5 +290,10 @@ void EnsightFormat::count_numarray_celltype()
 
 void  EnsightFormat::count_id_celltype()
 {
+    if (id_numarray_celltype.at(m_cell_type) == m_numarray_celltype.at(m_cell_type))
+    {
+        id_numarray_celltype.at(m_cell_type) = 0;
+    }
     id_numarray_celltype.at(m_cell_type) ++; 
+
 }
