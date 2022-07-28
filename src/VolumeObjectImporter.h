@@ -7,7 +7,7 @@
 class VolumeObjectImporter : public kvs::UnstructuredVolumeObject
 {
 private:
-    VTKFormat m_vtk_format;
+    VTKFormat* m_vtk_format;
 
 public:
     VolumeObjectImporter( VTKFormat vtkFormat );

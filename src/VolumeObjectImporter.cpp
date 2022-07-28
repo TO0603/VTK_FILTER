@@ -1,7 +1,7 @@
 #include "VolumeObjectImporter.h"
 
 VolumeObjectImporter::VolumeObjectImporter( VTKFormat vtkFormat ):
-    m_vtk_format( vtkFormat )
+    m_vtk_format( &vtkFormat )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     create_unstructured_volume_object();
@@ -46,29 +46,29 @@ kvs::UnstructuredVolumeObject::CellType VolumeObjectImporter::convert_vtk_cell_t
 void VolumeObjectImporter::create_unstructured_volume_object()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type( m_vtk_format.getCellType() ) );
-    this->setVeclen( m_vtk_format.getNumberOfKinds() );
-    this->setNumberOfNodes( m_vtk_format.getNumberOfNodes() );
-    this->setNumberOfCells( m_vtk_format.getNumberOfCells() );
-    this->setCoords( m_vtk_format.getCoordArray() );
-    this->setConnections( m_vtk_format.getConnectionArray() );
+    this->setCellType( convert_vtk_cell_type_to_kvs_cell_type( m_vtk_format->getCellType() ) );
+    this->setVeclen( m_vtk_format->getNumberOfKinds() );
+    this->setNumberOfNodes( m_vtk_format->getNumberOfNodes() );
+    this->setNumberOfCells( m_vtk_format->getNumberOfCells() );
+    this->setCoords( m_vtk_format->getCoordArray() );
+    this->setConnections( m_vtk_format->getConnectionArray() );
 
     int values_index = 0;
 
-    for( int i = 0; i < m_vtk_format.getNumberOfKinds(); i++ )
+    for( int i = 0; i < m_vtk_format->getNumberOfKinds(); i++ )
     {
-        m_vtk_format.getMin().at(i) = m_vtk_format.getValuewArray().at(i * m_vtk_format.getNumberOfNodes());
-        m_vtk_format.getMax().at(i) = m_vtk_format.getValuewArray().at(i * m_vtk_format.getNumberOfNodes());
-        for( int j = 0; j < m_vtk_format.getNumberOfNodes(); j++ )
+        m_vtk_format->getMin().at(i) = m_vtk_format->getValuewArray().at(i * m_vtk_format->getNumberOfNodes());
+        m_vtk_format->getMax().at(i) = m_vtk_format->getValuewArray().at(i * m_vtk_format->getNumberOfNodes());
+        for( int j = 0; j < m_vtk_format->getNumberOfNodes(); j++ )
         {
-            float tmp = m_vtk_format.getValuewArray().at(values_index);
-            m_vtk_format.getMin().at(i) = kvs::Math::Min<float>(m_vtk_format.getMin().at(i),tmp);
-            m_vtk_format.getMax().at(i) = kvs::Math::Max<float>(m_vtk_format.getMin().at(i),tmp);
+            float tmp = m_vtk_format->getValuewArray().at(values_index);
+            m_vtk_format->getMin().at(i) = kvs::Math::Min<float>(m_vtk_format->getMin().at(i),tmp);
+            m_vtk_format->getMax().at(i) = kvs::Math::Max<float>(m_vtk_format->getMin().at(i),tmp);
             values_index++;
         }
     }
 
-    this->setValues( m_vtk_format.getValuewArray() );
+    this->setValues( m_vtk_format->getValuewArray() );
     this->updateMinMaxCoords();
     this->updateMinMaxValues();
     this->updateNormalizeParameters();
