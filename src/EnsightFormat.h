@@ -87,7 +87,7 @@ private:
 public:
     EnsightFormat();
     void setNumberOfBlock(std::string input_vtk_file);
-    void read(std::string input_vtk_file, const int i_block, const int i_step);
+    void read(std::string input_vtk_file, const int i_block, int i_step);
     void generate();
     void show_memory();
     void check_ensight_data_cell_type();

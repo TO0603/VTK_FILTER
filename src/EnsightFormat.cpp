@@ -47,7 +47,6 @@ void EnsightFormat::setNumberOfBlock(std::string input_ensight_file)
     show_memory();
 
     vtkMultiBlockDataSet*  output = m_EnSightGoldBinaryReader->GetOutput(); 
-    //vtkMultiBlockDataSet*  output = reader->GetOutput(); 
     m_block_number =  output -> GetNumberOfBlocks(); 
     m_total_nodes  =  output -> GetNumberOfPoints();
     m_total_cells  =  output -> GetNumberOfCells(); 
@@ -63,7 +62,7 @@ void EnsightFormat::setNumberOfBlock(std::string input_ensight_file)
 
 #ifdef VALUE_DEBUG
     m_EnSightGoldBinaryReader->PrintSelf(std::cout, vtkIndent(2));
-    output->PrintSelf(std::cout, vtkIndent(2));
+    //output->PrintSelf(std::cout, vtkIndent(2));
     m_DataArrayCollection = m_EnSightGoldBinaryReader -> GetTimeSets();
     m_DataArrayCollection -> PrintSelf(std::cout, vtkIndent(2));
 #endif
@@ -77,26 +76,28 @@ void EnsightFormat::setNumberOfBlock(std::string input_ensight_file)
     else
     {
         m_DataArray = m_EnSightGoldBinaryReader -> GetTimeSets() -> GetItem(0);
-        m_DataArray -> PrintSelf(std::cout, vtkIndent(2));
         m_timesteps = m_DataArray -> GetSize(); 
 
 #ifdef VALUE_DEBUG
         std::cout << "m_timesteps =" << m_timesteps << std::endl;
-        m_time = m_DataArray ->GetTuple1(1) ;
+        for ( int i = 0; i < m_timesteps ; i++ )
+        {
+        m_time = m_DataArray ->GetTuple1(i) ;
         std::cout << "m_time =" << m_time << std::endl;
+        }
+        m_DataArray -> PrintSelf(std::cout, vtkIndent(2));
 #endif
     }
 
 }
 
-void EnsightFormat::read(std::string input_vtk_file, const int i_block, const int i_step)
+void EnsightFormat::read(std::string input_vtk_file, const int i_block, int i_step)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
-
+    m_DataArray = m_EnSightGoldBinaryReader -> GetTimeSets() -> GetItem(0);  // reget info of m_DataArray.( the info is deleted at end of setNumberOfBlock? )
     m_EnSightGoldBinaryReader -> SetTimeValue(m_DataArray -> GetTuple1(i_step));
     m_EnSightGoldBinaryReader -> Update();
     vtkDataObject* block = m_EnSightGoldBinaryReader -> GetOutput() -> GetBlock(i_block);
-    //vtkDataObject* block = m_MultiBlockDataSet->GetBlock(i_block);
 
     vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkUnstructuredGrid::New();
     unstructuredGrid = dynamic_cast<vtkUnstructuredGrid *>(block);
@@ -153,17 +154,12 @@ void EnsightFormat::setConnectionArray()
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     int new_id;
-    //m_cell_type;
     vtkNew<vtkIdList> included_points;
     int connection_index = 0;
     for(int i = 0; i < m_nelements; i++)
     {
         vtkCell* element = m_reader->GetCell(i);
         m_cell_type = element->GetCellType();
-        //if (i % 100 ==0)
-        //{
-        //std::cout << "m_cell_type = " << m_cell_type << std::endl;
-        //}
         int n_points = element->GetNumberOfPoints();
         for(int j = 0; j < n_points; j++)
         {
@@ -184,9 +180,9 @@ void EnsightFormat::check_ensight_data_cell_type()
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
     m_npoint_data_components          = m_reader -> GetPointData() ->GetNumberOfComponents();
     m_ncell_data_components           = m_reader -> GetCellData()  ->GetNumberOfComponents();
-    m_nelements                       = m_reader->GetNumberOfCells();
     m_nkinds                          = m_npoint_data_components + m_ncell_data_components;
-    
+
+    m_nelements                       = m_reader->GetNumberOfCells();
     vtkCell* element = m_reader->GetCell(m_nelements - 1);
     m_cell_type = element->GetCellType();
 
@@ -256,8 +252,10 @@ void EnsightFormat::read_vtk_file_parameter(vtkUnstructuredGrid *reader)
             getMax().at(i) = kvs::Math::Max<float>(getMax().at(i),tmp);
             values_index++;
         }
-        //    std::cout << "m_min                = " << getMin().at(i)                << std::endl;
-        //    std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
+#ifdef VALUE_DEBUG
+            std::cout << "m_min                = " << getMin().at(i)                << std::endl;
+            std::cout << "m_max                = " << getMax().at(i)                 << std::endl;
+#endif
     }  
 }
 

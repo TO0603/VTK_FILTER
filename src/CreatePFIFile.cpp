@@ -17,6 +17,12 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
     m_file_name(fileName)
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
+    m_sub_nnodes.allocate(m_nblocks);
+    m_sub_ncells.allocate(m_nblocks);
+    m_sub_coord_array.allocate(m_nblocks * 6);
+    filterEnsight.getMultiBlockDataSet() -> GetBounds(m_total_bounds) ; 
+    m_numarray_celltype.allocate(15);
+    m_numarray_celltype = filterEnsight.getNumArrayCellType();    
 #ifdef VALUE_DEBUG
     std::cout << "m_nnodes                  = " << m_nnodes                  << std::endl;
     std::cout << "m_ncells                  = " << m_ncells                  << std::endl;
@@ -26,17 +32,11 @@ CreatePFIFile::CreatePFIFile(std::string fileName, EnsightFormat filterEnsight):
     std::cout << "m_connection_array.size() = " << m_connection_array.size() << std::endl;
     std::cout << "m_cell_type = " << m_cell_type << std::endl;
     std::cout << "m_timesteps = " << m_timesteps << std::endl;
-#endif
-    m_sub_nnodes.allocate(m_nblocks);
-    m_sub_ncells.allocate(m_nblocks);
-    m_sub_coord_array.allocate(m_nblocks * 6);
-    filterEnsight.getMultiBlockDataSet() -> GetBounds(m_total_bounds) ; 
-    m_numarray_celltype.allocate(15);
-    m_numarray_celltype = filterEnsight.getNumArrayCellType();    
     for (int i = 0; i< 15; i++)
     {
         std::cout << "m_numarray_celltype = "<< m_numarray_celltype.at(i) <<std::endl;
     }
+#endif
 }
 
 void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight, const int iblock, const int i_step)
@@ -45,8 +45,6 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight, const int iblo
     { 
         m_sub_nnodes.at(iblock) =  filterEnsight.getNumberOfNodes();
         m_sub_ncells.at(iblock) =  filterEnsight.getNumberOfElements();
-        //std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
-        //std::cout << " m_sub_cells = " << m_sub_ncells.at(iblock) <<std::endl; 
         double tmp[6];
         filterEnsight.getUnstructuredGrid() -> GetBounds(tmp);
 
@@ -59,10 +57,15 @@ void CreatePFIFile::update_subvolume(EnsightFormat filterEnsight, const int iblo
         m_sub_coord_array.at(4 + iblock*6) = tmp[3];
         m_sub_coord_array.at(5 + iblock*6) = tmp[5];
 
-        //    for (auto i: tmp)
-        //    {
-        //        std::cout << " tmp =  " << i <<std::endl;
-        //    }
+
+#ifdef VALUE_DEBUG
+        std::cout << " m_sub_nnodes = " << m_sub_nnodes.at(iblock) <<std::endl; 
+        std::cout << " m_sub_cells = " << m_sub_ncells.at(iblock) <<std::endl; 
+            for (auto i: tmp)
+            {
+                std::cout << " tmp =  " << i <<std::endl;
+            }
+#endif
 
     }
 
@@ -91,12 +94,12 @@ void CreatePFIFile::write_pfi()
     int itmp;
     float ftmp[6];
 
-//#ifdef VALUE_DEBUG
+#ifdef VALUE_DEBUG
     for (auto i: m_numarray_celltype)
     {
         std::cout << "m_numarray_celltype = "<< i <<std::endl;
     }
-//#endif
+#endif
 
     for (int i = 0; i < 15; i++ )
     {

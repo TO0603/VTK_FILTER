@@ -17,9 +17,9 @@ int main(int argc, char* argv[])
     //コマンドライン引数からファイル名を取得
     //std::string inputFilename = argv[1];
     //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/hex.case";
-    //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
+    std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/SHRT45R_TR_PSSP.case";
     //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/hex_vtk/TestTetra.case";
-    std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/time/TestTetraTime.case";
+    //std::string inputFilename = "/Users/shimomurakazuya/SGI/EnsightGold/time/TestTetraTime.case";
     int path_i = inputFilename.find_last_of("/") + 1;
     int ext_i = inputFilename.find_last_of(".");
     std::string fileName = inputFilename.substr(path_i,ext_i-path_i);
@@ -28,6 +28,7 @@ int main(int argc, char* argv[])
     ens->setNumberOfBlock(inputFilename);
     int block_number = ens ->getBlockNumber();
     int time_step = ens ->getTimeStep();
+    std::cout << "time_step =" << time_step   << std::endl;
     //int block_number = 1;
 
     for (int i_block = 0; i_block < block_number ; i_block++)
@@ -35,7 +36,7 @@ int main(int argc, char* argv[])
         ens->read(inputFilename, i_block, 0);
         //ens->generate();
         //ens->count_numarray_celltype(); 
-        ens->check_ensight_data_cell_type(); 
+        ens->check_ensight_data_cell_type(); //get number of subvolume for each cell_type & number of veclen
     }
 
     CreatePFIFile *createPFI = new CreatePFIFile(fileName, *ens);
