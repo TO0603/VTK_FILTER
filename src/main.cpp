@@ -21,13 +21,17 @@ int main(int argc, char* argv[])
 
     VTKFormat *vtk = new VTKFormat();
     vtk->read( inputFilepath );
-    vtk->generate();
 
-    CreatePFI *createPFI = new CreatePFI( baseName, *vtk );
+//    kvs::UnstructuredVolumeObject* volume = new VolumeObjectImporter( *vtk );
+    VolumeObjectImporter* volume = new VolumeObjectImporter( *vtk );
+
+    CreatePFI *createPFI = new CreatePFI( baseName, *volume );
     std::string kvsml_filename = createPFI->KVSMLFileName();
 
-    kvs::UnstructuredVolumeObject* volume = new VolumeObjectImporter( *vtk );
+
+
     createPFI->write( volume );
+
 
     kvs::KVSMLUnstructuredVolumeObject* kvsml =
             new kvs::UnstructuredVolumeExporter<kvs::KVSMLUnstructuredVolumeObject>( volume );
@@ -37,7 +41,7 @@ int main(int argc, char* argv[])
     delete vtk;
     delete createPFI;
     delete volume;
-    delete kvsml;
+//    delete kvsml;
     std::cout << "[EXIT]" << std::endl;
     return EXIT_SUCCESS;
 }

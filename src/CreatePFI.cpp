@@ -1,7 +1,7 @@
 #include "CreatePFI.h"
 
-CreatePFI::CreatePFI( std::string fileName, VTKFormat vtkFormat ):
-    m_vtk_format( vtkFormat ),
+CreatePFI::CreatePFI( std::string fileName, VolumeObjectImporter volumeObjectImporter ):
+    m_volume_object_importer( volumeObjectImporter ),
     m_base_name( fileName )
 {
     std::cout << __FILE__ << " : " << __func__ << " : " << __LINE__ << std::endl;
@@ -49,7 +49,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 
     pfi = fopen(pfiFileName.c_str(), "wb");
     //頂点数
-    itmp = m_vtk_format.getNumberOfNodes();
+    itmp = m_volume_object_importer.getNumberOfNodes();
 
 #ifdef VALUE_DEBUG
     std::cout << "nnode = " << itmp << std::endl;
@@ -57,7 +57,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 
     fwrite(&itmp, 4, 1, pfi);
     //要素数
-    itmp = m_vtk_format.getNumberOfCells();
+    itmp = m_volume_object_importer.getNumberOfCells();
 
 #ifdef VALUE_DEBUG
     std::cout << "ncell = " << itmp << std::endl;
@@ -89,7 +89,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 
     fwrite(&itmp, 4, 1, pfi);
     //成分数(ベクトル?)
-    itmp = m_vtk_format.getNumberOfKinds();
+    itmp = m_volume_object_importer.getNumberOfKinds();
 
 #ifdef VALUE_DEBUG
     std::cout << "nveclen = " << itmp << std::endl;
@@ -139,7 +139,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 
     fwrite(&ftmp, 4, 6, pfi);
     //サブボリュームの頂点数
-    itmp = m_vtk_format.getNumberOfNodes();
+    itmp = m_volume_object_importer.getNumberOfNodes();
 
 #ifdef VALUE_DEBUG
     std::cout << "subvolume_nnode = " << itmp << std::endl;
@@ -147,7 +147,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 
     fwrite(&itmp, 4, 1, pfi);
     //サブボリュームの要素数
-    itmp = m_vtk_format.getNumberOfCells();
+    itmp = m_volume_object_importer.getNumberOfCells();
 
 #ifdef VALUE_DEBUG
     std::cout << "subvolume_ncell = " << itmp << std::endl;
@@ -166,10 +166,10 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
     std::cout << "subvolume_max_z = " << ftmp[5] << std::endl;
 #endif
 
-    for(int i = 0; i < m_vtk_format.getNumberOfKinds(); i++)
+    for(int i = 0; i < m_volume_object_importer.getNumberOfKinds(); i++)
     {
         //ステップiの成分1最小値
-        oftmp = m_vtk_format.getMin().at(i);
+        oftmp = m_volume_object_importer.getMin().at(i);
 
 #ifdef VALUE_DEBUG
         std::cout << "step[" << i << "] min_veclen = " << oftmp << std::endl;
@@ -177,7 +177,7 @@ void CreatePFI::write( kvs::UnstructuredVolumeObject* volume )
 
         fwrite(&oftmp, 4, 1, pfi);
         //ステップiの成分1最大値
-        oftmp = m_vtk_format.getMax().at(i);
+        oftmp = m_volume_object_importer.getMax().at(i);
 
 #ifdef VALUE_DEBUG
         std::cout << "step[" << i << "] max_veclen = " << oftmp << std::endl;
