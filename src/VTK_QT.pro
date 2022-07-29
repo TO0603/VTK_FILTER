@@ -11,14 +11,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 # ifdef DEBUGのコードを確認する場合はコメントアウトを外してください。
 # .proファイルを更新したらqmakeとリビルドすること。
-DEFINES += DEBUG
+#DEFINES += DEBUG
+#DEFINES += VALUE_DEBUG
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    CreatePFI.cpp \
+    VolumeObjectImporter.cpp \
+    VTKFormat.cpp
 INCLUDEPATH += $(KVS_DIR)
 INCLUDEPATH += $(KVS_DIR)/include
 INCLUDEPATH += $(VTK_INCLUDE_PATH)
@@ -34,3 +38,9 @@ LIBS += -L$(VTK_LIB_PATH) -lvtkCommonCore-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkzlib-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkIOCore-9.1
 LIBS += -L$(VTK_LIB_PATH) -lvtkIOLegacy-9.1
+LIBS += -L$(VTK_LIB_PATH) -lvtkFiltersCore-9.1
+
+HEADERS += \
+    CreatePFI.h \
+    VolumeObjectImporter.h \
+    VTKFormat.h
