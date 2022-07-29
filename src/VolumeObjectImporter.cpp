@@ -79,6 +79,10 @@ void VolumeObjectImporter::create_unstructured_volume_object()
     this->setCoords( getCoordArray() );
     this->setConnections( getConnectionArray() );
 
+    kvs::UnstructuredVolumeObject::setCellType(kvs::UnstructuredVolumeObject::CellType::Hexahedra);
+    kvs::UnstructuredVolumeObject::setNumberOfNodes(getNumberOfNodes());
+    kvs::UnstructuredVolumeObject::setNumberOfCells(getNumberOfCells());
+
     std::cout << "getCellType()        : " << getCellType() << std::endl;
     std::cout << "getNumberOfKinds()   : " << getNumberOfKinds()   << std::endl;
     std::cout << "getNumberOfNodes()   : " << getNumberOfNodes()   << std::endl;

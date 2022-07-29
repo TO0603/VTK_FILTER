@@ -24,6 +24,9 @@ int main(int argc, char* argv[])
 
 //    kvs::UnstructuredVolumeObject* volume = new VolumeObjectImporter( *vtk );
     VolumeObjectImporter* volume = new VolumeObjectImporter( *vtk );
+    std::cout << "volume->nnodes() : " << volume->nnodes() << std::endl;
+    std::cout << "volume->ncells() : " << volume->ncells() << std::endl;
+    std::cout << "volume->cellType() : " << volume->cellType() << std::endl;
 
     CreatePFI *createPFI = new CreatePFI( baseName, *volume );
     std::string kvsml_filename = createPFI->KVSMLFileName();
